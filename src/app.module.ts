@@ -1,29 +1,64 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { databaseConfig } from './database/sequalize.config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Logger } from '@nestjs/common';
+import * as Joi from 'joi';
+import { defaultTypeOrmOptions } from './database/typeorm.config';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { User } from './models/user.model';
+const logger = new Logger('SystemLog');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: ['.env'],
+      isGlobal: true,
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.string()
+          .valid('development', 'production', 'test', 'provision')
+          .default('development'),
+        PORT: Joi.number().default(3000),
+      }),
+    }),
     TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'exercisenestjs_db',
+      ...defaultTypeOrmOptions,
       entities: [],
+    }),
+    SequelizeModule.forRoot({
+      ...databaseConfig,
+      autoLoadModels: true,
       synchronize: true,
     }),
-
     JwtModule.register({
-      secret: '<YOUR_JWT_SECRET_KEY>',
+      secret: '',
       signOptions: { expiresIn: '1h' },
     }),
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private configService: ConfigService) {
+    // get an environment variable
+    const dbUser = this.configService.get<string>('DB_USERNAME');
+    const jwt = this.configService.get<string>('JWT_SECRET');
+    const jwt2 = process.env.JWT_SECRET;
+    logger.debug(
+      'this is db User name ',
+      dbUser,
+      process.env.NODE_ENV,
+      jwt,
+      jwt2,
+    );
+  }
+}

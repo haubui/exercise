@@ -13,6 +13,8 @@ import { defaultTypeOrmOptions } from './database/typeorm.config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { User } from './models/user.model';
+import { jwtModuleOptions } from './config/jwtconfig';
+import { AppIntercepter } from './base/app.intercepter';
 const logger = new Logger('SystemLog');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 
@@ -38,14 +40,19 @@ const logger = new Logger('SystemLog');
       synchronize: true,
     }),
     JwtModule.register({
-      secret: '',
-      signOptions: { expiresIn: '1h' },
+      ...jwtModuleOptions,
     }),
     AuthModule,
     UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AppIntercepter,
+    },
+  ],
 })
 export class AppModule {
   constructor(private configService: ConfigService) {

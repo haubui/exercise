@@ -16,9 +16,11 @@ export class BaseModel extends Model {
 
   @Exclude()
   @CreatedAt
+  @Column({ field: 'createdAt' })
   created_at?: Date;
 
   @Exclude()
   @UpdatedAt
+  @Column({ field: 'updatedAt' })
   updated_at?: Date;
 }

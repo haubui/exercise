@@ -7,7 +7,7 @@ export class User extends BaseModel {
   role_id: number;
 
   @Column
-  name: string;
+  user_name: string;
 
   @Column
   password: string;

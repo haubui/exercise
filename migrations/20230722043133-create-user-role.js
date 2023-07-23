@@ -10,7 +10,9 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       role: {
+        allowNull: false,
         type: Sequelize.STRING,
+        defaultValue: 'user',
       },
       createdAt: {
         allowNull: false,

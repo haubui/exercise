@@ -6,23 +6,14 @@ import * as dotenv from 'dotenv';
 const logger = new Logger('SystemLog');
 import * as uuid from 'uuid';
 import { Sequelize } from 'sequelize';
+import { JwtService } from '@nestjs/jwt';
 async function bootstrap() {
   logger.debug('bootstrap start running....');
   const secretKey = uuid.v4();
   const app = await NestFactory.create(AppModule);
   logger.debug('secretKeyStart');
-  logger.debug(secretKey);
+  logger.debug(process.env.JWT_SECRET);
   logger.debug('secretKeyEnd');
-  app.use((req, res, next) => {
-    const { token } = req.cookies;
-    if (token) {
-      // const { _id } = jwt.verify(token, process.env.JWT_SECRET);
-      // put the userId onto the req for future requests to access
-      // req.userId = _id;
-    }
-    next();
-  });
-
   const sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USERNAME,
@@ -38,6 +29,6 @@ async function bootstrap() {
   } catch (error) {
     console.error('Unable to connect to the database:', error);
   }
-  await app.listen(3000);
+  await app.listen(process.env.SERVER_PORT, process.env.SERVER_HOST);
 }
 bootstrap();

@@ -1,8 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { ResponseUtils } from 'src/base/response.utils';
+import { User } from 'src/models/user.model';
 
 @Injectable()
 export class UsersService {
-    findOne(username: any) {
-        throw new Error('Method not implemented.');
+  constructor(
+    @InjectModel(User)
+    private userModel: typeof User,
+  ) {}
+
+  async findAll(): Promise<User[]> {
+    return this.userModel.findAll();
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    const user = this.userModel.findOne({
+      where: {
+        email,
+      },
+    });
+
+    if (!user) {
+      throw ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND);
     }
+    return user;
+  }
+
+  async findOneById(id: string): Promise<User> {
+    return this.userModel.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async remove(id: string): Promise<void> {
+    const user = await this.findOneById(id);
+    await user.destroy();
+  }
 }

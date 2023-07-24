@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   auths.init(
     {
       user_id: DataTypes.INTEGER,
-      user_token: DataTypes.STRING,
+      user_token: DataTypes.TEXT,
       is_valid: DataTypes.BOOLEAN,
     },
     {

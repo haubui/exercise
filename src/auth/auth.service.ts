@@ -43,17 +43,19 @@ export class AuthService {
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: process.env.JWT_SECRET,
     });
+    console.log(accessToken.length);
     loginResponseDto.access_token = accessToken;
-    this.saveUserToken(user.id, accessToken);
+    await this.saveUserToken(user.id, accessToken);
     return loginResponseDto;
   }
 
   async saveUserToken(user_id: number, user_token: string) {
     const auths = new Auths();
-    auths.user_id - user_id;
+    auths.user_id = user_id;
     auths.user_token = user_token;
     auths.createdAt = new Date();
     auths.updatedAt = new Date();
-    auths.save();
+    auths.is_valid = true;
+    await auths.save();
   }
 }

@@ -15,16 +15,19 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string): Promise<User> {
-    const user = this.userModel.findOne({
-      where: {
-        email,
-      },
-    });
-
-    if (!user) {
+    try {
+      const user = this.userModel.findOne({
+        where: {
+          email,
+        },
+      });
+      if (!user) {
+        throw ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND);
+      }
+      return user;
+    } catch (error) {
       throw ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND);
     }
-    return user;
   }
 
   async findOneById(id: string): Promise<User> {

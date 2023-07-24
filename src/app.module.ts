@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { databaseConfig } from './database/sequalize.config';
@@ -15,6 +15,7 @@ import { UsersModule } from './users/users.module';
 import { User } from './models/user.model';
 import { jwtModuleOptions } from './config/jwtconfig';
 import { AppIntercepter } from './base/app.intercepter';
+import { CarRentalValidationPine } from './validate/validation.pine';
 const logger = new Logger('SystemLog');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 
@@ -51,6 +52,10 @@ const logger = new Logger('SystemLog');
     {
       provide: APP_INTERCEPTOR,
       useClass: AppIntercepter,
+    },
+    {
+      provide: APP_PIPE,
+      useClass: CarRentalValidationPine,
     },
   ],
 })

@@ -6,18 +6,28 @@ import { HashUtils } from './hash.util';
 import { LoginResponseDto } from './dto/login.response.dto';
 import { ResponseUtils } from 'src/base/response.utils';
 import { Error } from 'src/base/error.response';
+import { InjectModel } from '@nestjs/sequelize';
+import { Auths } from 'src/models/auth.model';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    @InjectModel(Auths)
+    private authModel: typeof Auths,
   ) {}
 
   async signIn(email, pass): Promise<LoginResponseDto> {
     const adminPassword = await HashUtils.hash(pass);
     console.log('from the request', email, pass);
     const user = await this.usersService.findOneByEmail(email);
+    if (!user) {
+      throw ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+        code: HttpStatus.NOT_FOUND,
+        message: 'User email or pass not correct!',
+      });
+    }
     console.log('from the db user', user.email, user.password);
     console.log(adminPassword);
     const isMatch = await bcrypt.compare(pass, user.password);
@@ -34,6 +44,16 @@ export class AuthService {
       secret: process.env.JWT_SECRET,
     });
     loginResponseDto.access_token = accessToken;
+    this.saveUserToken(user.id, accessToken);
     return loginResponseDto;
+  }
+
+  async saveUserToken(user_id: number, user_token: string) {
+    const auths = new Auths();
+    auths.user_id - user_id;
+    auths.user_token = user_token;
+    auths.createdAt = new Date();
+    auths.updatedAt = new Date();
+    auths.save();
   }
 }

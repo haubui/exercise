@@ -5,9 +5,9 @@ import * as bcrypt from 'bcrypt';
 import { HashUtils } from './hash.util';
 import { LoginResponseDto } from './dto/login.response.dto';
 import { ResponseUtils } from 'src/base/response.utils';
-import { Error } from 'src/base/error.response';
 import { InjectModel } from '@nestjs/sequelize';
 import { Auths } from 'src/models/auth.model';
+import { where } from 'sequelize';
 
 @Injectable()
 export class AuthService {
@@ -45,8 +45,19 @@ export class AuthService {
     });
     console.log(accessToken.length);
     loginResponseDto.access_token = accessToken;
+    await this.invalidTokenFamily(user.id);
     await this.saveUserToken(user.id, accessToken);
     return loginResponseDto;
+  }
+
+  async invalidTokenFamily(userId: number) {
+    const allTokenOfUser = await this.authModel.findAll({
+      where: { user_id: userId },
+    });
+    allTokenOfUser.forEach((token) => {
+      token.is_valid = false;
+      token.save();
+    });
   }
 
   async saveUserToken(user_id: number, user_token: string) {

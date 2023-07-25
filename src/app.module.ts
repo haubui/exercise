@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { databaseConfig } from './database/sequalize.config';
@@ -16,6 +16,9 @@ import { User } from './models/user.model';
 import { jwtModuleOptions } from './config/jwtconfig';
 import { AppIntercepter } from './base/app.intercepter';
 import { CarRentalValidationPine } from './validate/validation.pine';
+import { AuthGuard } from './guards/auth.guard';
+import { RolesGuard } from './guards/role.guard';
+import { UsersService } from './users/users.service';
 const logger = new Logger('SystemLog');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 
@@ -57,6 +60,15 @@ const logger = new Logger('SystemLog');
       provide: APP_PIPE,
       useClass: CarRentalValidationPine,
     },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+    UsersService,
   ],
 })
 export class AppModule {

@@ -7,7 +7,6 @@ import { LoginResponseDto } from './dto/login.response.dto';
 import { ResponseUtils } from 'src/base/response.utils';
 import { InjectModel } from '@nestjs/sequelize';
 import { Auths } from 'src/models/auth.model';
-import { where } from 'sequelize';
 
 @Injectable()
 export class AuthService {
@@ -38,7 +37,11 @@ export class AuthService {
         message: 'User email or pass not correct!',
       });
     }
-    const payload = { sub: user.id, user: user };
+    const payload = {
+      userId: user.id,
+      userEmail: email,
+      userRole: user.mappingRoleIdToRole(),
+    };
     const loginResponseDto = new LoginResponseDto();
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: process.env.JWT_SECRET,

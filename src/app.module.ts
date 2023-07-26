@@ -19,6 +19,11 @@ import { CarRentalValidationPine } from './validate/validation.pine';
 import { AuthGuard } from './guards/auth.guard';
 import { RolesGuard } from './guards/role.guard';
 import { UsersService } from './users/users.service';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksModule } from './background/bacground.tasks.module';
+import { CACHE_TIME_TO_LIVE } from './constants/constants';
+import { CacheService } from './cache/cache.service';
 const logger = new Logger('SystemLog');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 
@@ -48,6 +53,13 @@ const logger = new Logger('SystemLog');
     }),
     AuthModule,
     UsersModule,
+    // we are using Caching Version 5.x so time-to-live(ttl) this value counted in miliseconds
+    CacheModule.register({
+      ttl: CACHE_TIME_TO_LIVE,
+      max: 2000,
+    }),
+    ScheduleModule.forRoot(),
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [
@@ -69,6 +81,11 @@ const logger = new Logger('SystemLog');
       useClass: RolesGuard,
     },
     UsersService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+    CacheService,
   ],
 })
 export class AppModule {

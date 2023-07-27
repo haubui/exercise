@@ -124,7 +124,7 @@ export class ResponseUtils {
           httpStatus,
           InternalServerErrorException.name,
         );
-        throw new BadRequestException(error);
+        throw new InternalServerErrorException(error);
       }
     }
   }

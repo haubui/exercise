@@ -3,16 +3,16 @@ import { Cron, Interval, Timeout } from '@nestjs/schedule';
 
 @Injectable()
 export class TasksService {
-  @Cron('*/5 * * * * *') // Runs every 5 seconds
+  @Cron('*/300 * * * * *') // Runs every 5 minutes
   checkSomething() {
     // Perform your check logic here
-    console.log('Checking system status, run every 5 seconds ...');
+    console.log('Checking system status, run every 5 minutes ...');
   }
 
-  @Interval(20000) // Runs every 20 seconds
+  @Interval(120000) // Runs every 2 minutes
   deleteSomething() {
     // Perform your delete logic here
-    console.log('Deleting un use data, Runs every 20 seconds ...');
+    console.log('Deleting un use data, Runs every 2 minutes ...');
   }
 
   @Timeout(60000) // Runs after 1 minute

@@ -9,6 +9,7 @@ import { Auths } from 'src/models/auth.model';
 import { CacheService } from 'src/cache/cache.service';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CACHE_TIME_TO_LIVE, MAX_CACHE_ITEMS } from 'src/constants/constants';
+import { QueueModule } from 'src/queue/queue.module';
 
 @Module({
   controllers: [AuthController],
@@ -20,6 +21,7 @@ import { CACHE_TIME_TO_LIVE, MAX_CACHE_ITEMS } from 'src/constants/constants';
       ttl: CACHE_TIME_TO_LIVE,
       max: MAX_CACHE_ITEMS,
     }),
+    QueueModule,
   ],
   exports: [AuthService],
 })

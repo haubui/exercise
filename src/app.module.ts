@@ -22,6 +22,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './background/bacground.tasks.module';
 import { CACHE_TIME_TO_LIVE, MAX_CACHE_ITEMS } from './constants/constants';
 import { CacheService } from './cache/cache.service';
+import { BullModule } from '@nestjs/bull';
+import { QueueModule } from './queue/queue.module';
 const logger = new Logger('SystemLog');
 
 @Module({
@@ -57,6 +59,7 @@ const logger = new Logger('SystemLog');
     }),
     ScheduleModule.forRoot(),
     TasksModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [
@@ -77,17 +80,13 @@ const logger = new Logger('SystemLog');
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
-    },
     CacheService,
   ],
 })
 export class AppModule {
   constructor(private configService: ConfigService) {
     // get an environment variable
-    const dbUser = this.configService.get<string>('DB_USERNAME');
+    const dbUser = this.configService.get<string>('REDIS_HOST');
     const jwt = this.configService.get<string>('JWT_SECRET');
     const jwt2 = process.env.JWT_SECRET;
     logger.debug(

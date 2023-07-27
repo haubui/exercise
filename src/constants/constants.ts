@@ -11,3 +11,5 @@ export const USER_ROLE_ID = process.env.USER_ROLE_ID;
 export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 export const USER_TEST_PASSWORD = process.env.USER_TEST_PASSWORD;
 export const DEVERLOPER_PASSWORD = process.env.DEVERLOPER_PASSWORD;
+export const REGISTER_USER_QUEUE_PROCESSOR = 'register_user_queue_processor';
+export const REGISTER_USER_QUEUE_PROCESS = 'register_user_queue_process_name';

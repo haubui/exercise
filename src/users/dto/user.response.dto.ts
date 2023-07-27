@@ -1,23 +1,17 @@
 import {
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   ValidateIf,
 } from 'class-validator';
-import { Max, Min } from 'sequelize-typescript';
 
-export class UserDto {
+export class UserResponseDto {
   user_role = process.env.USER_ROLE_ID.toString();
 
   @IsString()
   @IsNotEmpty()
   userName: string;
-
-  @IsString()
-  @IsNotEmpty()
-  userPassword: string;
 
   @IsNotEmpty()
   @IsEmail()
@@ -30,7 +24,6 @@ export class UserDto {
 
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
   workTitle: string | null;
 
   @IsString()

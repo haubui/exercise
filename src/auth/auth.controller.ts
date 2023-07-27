@@ -5,6 +5,8 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -14,6 +16,8 @@ import { UsersService } from 'src/users/users.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { Public } from 'src/guards/public.decorator';
 import { Role, Roles } from 'src/guards/role.decorator';
+import { GuardUtils } from 'src/guards/guard.utils';
+import { Request } from 'express';
 
 @Controller('auth/v1')
 export class AuthController {
@@ -33,5 +37,12 @@ export class AuthController {
   @Roles(Role.Admin)
   async getAllUsers(): Promise<User[]> {
     return await this.usersService.findAll();
+  }
+
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('logout')
+  async logOut(@Req() request: Request): Promise<void> {
+    const token = GuardUtils.extractTokenFromRequest(request);
+    await this.authService.logOut(token);
   }
 }

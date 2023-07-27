@@ -7,12 +7,14 @@ import { LoginResponseDto } from './dto/login.response.dto';
 import { ResponseUtils } from 'src/base/response.utils';
 import { InjectModel } from '@nestjs/sequelize';
 import { Auths } from 'src/models/auth.model';
+import { CacheService } from 'src/cache/cache.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private cacheService: CacheService,
     @InjectModel(Auths)
     private authModel: typeof Auths,
   ) {}
@@ -71,5 +73,24 @@ export class AuthService {
     auths.updatedAt = new Date();
     auths.is_valid = true;
     await auths.save();
+  }
+
+  async logOut(token: string) {
+    if (token) {
+      const userHaveToken = await this.authModel.findOne({
+        where: { user_token: token },
+      });
+      await this.invalidTokenFamily(userHaveToken.user_id);
+      await this.cacheService.deleteCacheTokenAfterLogout(token);
+    } else {
+      throw ResponseUtils.throwErrorException(HttpStatus.FORBIDDEN);
+    }
+  }
+
+  async didUserLogoutThisToken(token: string): Promise<boolean> {
+    const userHaveToken = await this.authModel.findOne({
+      where: { user_token: token },
+    });
+    return userHaveToken.is_valid;
   }
 }

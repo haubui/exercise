@@ -6,10 +6,22 @@ import { UsersModule } from 'src/users/users.module';
 import { JwtService } from '@nestjs/jwt';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Auths } from 'src/models/auth.model';
+import { CacheService } from 'src/cache/cache.service';
+import { CacheModule } from '@nestjs/cache-manager';
+import { CACHE_TIME_TO_LIVE, MAX_CACHE_ITEMS } from 'src/constants/constants';
+import { AppService } from 'src/app.service';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, UsersService, JwtService],
-  imports: [UsersModule, SequelizeModule.forFeature([Auths])],
+  providers: [AuthService, UsersService, JwtService, CacheService],
+  imports: [
+    UsersModule,
+    SequelizeModule.forFeature([Auths]),
+    CacheModule.register({
+      ttl: CACHE_TIME_TO_LIVE,
+      max: MAX_CACHE_ITEMS,
+    }),
+  ],
+  exports: [AuthService],
 })
 export class AuthModule {}

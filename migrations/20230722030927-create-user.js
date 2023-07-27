@@ -1,5 +1,8 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const dotenv = require('dotenv');
+dotenv.config();
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('users', {
@@ -11,8 +14,8 @@ module.exports = {
       },
       role_id: {
         allowNull: false,
-        type: Sequelize.INTEGER,
-        defaultValue: 2,
+        type: Sequelize.STRING,
+        defaultValue: process.env.USER_ROLE_ID.toString(),
       },
       user_name: {
         allowNull: false,

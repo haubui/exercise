@@ -9,7 +9,6 @@ import { Auths } from 'src/models/auth.model';
 import { CacheService } from 'src/cache/cache.service';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CACHE_TIME_TO_LIVE, MAX_CACHE_ITEMS } from 'src/constants/constants';
-import { AppService } from 'src/app.service';
 
 @Module({
   controllers: [AuthController],

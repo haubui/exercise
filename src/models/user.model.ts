@@ -6,7 +6,7 @@ import { Role } from 'src/guards/role.decorator';
 @Table
 export class User extends BaseModel {
   @Column
-  role_id: number;
+  role_id: string;
 
   @Column
   user_name: string;
@@ -40,6 +40,8 @@ export class User extends BaseModel {
   is_active: boolean;
 
   mappingRoleIdToRole(): Role {
-    return this.role_id === 1 ? Role.Admin : Role.User;
+    return this.role_id === process.env.ADMIN_ROLE_ID.toString()
+      ? Role.Admin
+      : Role.User;
   }
 }

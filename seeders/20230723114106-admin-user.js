@@ -2,19 +2,29 @@
 var saltRounds = 10;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 var bcrypt = require('bcrypt');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const dotenv = require('dotenv');
+dotenv.config();
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async up(queryInterface, _Sequelize) {
-    const hashedPassword = await bcrypt.hash('admin', saltRounds);
-    const hashedUserPassword = await bcrypt.hash('user123', saltRounds);
+    const hashedPassword = await bcrypt.hash(
+      process.env.ADMIN_PASSWORD.toString(),
+      saltRounds,
+    );
+    const hashedUserPassword = await bcrypt.hash(
+      process.env.USER_TEST_PASSWORD.toString(),
+      saltRounds,
+    );
     const hashedDeveloperPassword = await bcrypt.hash(
-      'developer123',
+      process.env.DEVERLOPER_PASSWORD.toString(),
       saltRounds,
     );
     const users = [
       {
-        role_id: 1,
+        role_id: process.env.ADMIN_ROLE_ID.toString(),
         user_name: 'admin',
         work_title: 'Admin Rental Car System',
         password: hashedPassword,
@@ -23,7 +33,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        role_id: 2,
+        role_id: process.env.USER_ROLE_ID.toString(),
         user_name: 'user_rental',
         work_title: 'User Rental Car System',
         password: hashedUserPassword,
@@ -32,7 +42,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        role_id: 2,
+        role_id: process.env.USER_ROLE_ID.toString(),
         user_name: 'developer_rental',
         work_title: 'Developer Rental Car System',
         password: hashedDeveloperPassword,

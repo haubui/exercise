@@ -13,7 +13,6 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { User } from 'src/models/user.model';
 import { UsersService } from 'src/users/users.service';
-import { AuthGuard } from 'src/guards/auth.guard';
 import { Public } from 'src/guards/public.decorator';
 import { Role, Roles } from 'src/guards/role.decorator';
 import { GuardUtils } from 'src/guards/guard.utils';

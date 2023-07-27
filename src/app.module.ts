@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -12,21 +12,17 @@ import * as Joi from 'joi';
 import { defaultTypeOrmOptions } from './database/typeorm.config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { User } from './models/user.model';
 import { jwtModuleOptions } from './config/jwtconfig';
 import { AppIntercepter } from './base/app.intercepter';
 import { CarRentalValidationPine } from './validate/validation.pine';
 import { AuthGuard } from './guards/auth.guard';
 import { RolesGuard } from './guards/role.guard';
-import { UsersService } from './users/users.service';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './background/bacground.tasks.module';
 import { CACHE_TIME_TO_LIVE, MAX_CACHE_ITEMS } from './constants/constants';
 import { CacheService } from './cache/cache.service';
-import { AuthService } from './auth/auth.service';
 const logger = new Logger('SystemLog');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 
 @Module({
   imports: [

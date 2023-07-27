@@ -1,7 +1,16 @@
-import { Controller, Param, Get, Delete, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Param,
+  Get,
+  Delete,
+  HttpCode,
+  Post,
+  Body,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { GetAllUserParam } from 'src/auth/dto/get.all.user.param';
 import { User } from 'src/models/user.model';
+import { UserDto } from './dto/user.dto';
 
 @Controller('users/v1')
 export class UsersController {
@@ -17,4 +26,7 @@ export class UsersController {
   async removeUser(@Param() param: GetAllUserParam): Promise<void> {
     return this.usersService.remove(param.userId.toString());
   }
+
+  @Post('register')
+  async registerUser(@Body() userDto: UserDto) {}
 }

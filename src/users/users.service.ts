@@ -65,10 +65,7 @@ export class UsersService {
       user.avatar_url = userDto.avatar_url;
       user.work_title = userDto.workTitle;
       await user.save();
-      this.registerQueue.add(REGISTER_USER_QUEUE_PROCESS, {
-        userName: user.user_name,
-        email: user.email,
-      });
+      this.registerQueue.add(REGISTER_USER_QUEUE_PROCESS, userDto);
       return user.toUserResponseDto();
     } catch (error) {
       console.log(error);

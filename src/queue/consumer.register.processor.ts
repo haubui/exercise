@@ -14,21 +14,21 @@ export class ComsumerRegisterProcessor {
   @OnQueueActive()
   onActive(job: Job) {
     console.log(
-      `Processing job ${job.id} of type ${job.name} with data ${job.data}...`,
+      `Processing job id ${job.id} of type ${job.name} with data ${job.data}...`,
     );
   }
 
   @Process(REGISTER_USER_QUEUE_PROCESS)
-  async registerUser(job: Job) {
-    console.log(`Email REGISTER_USER_QUEUE_PROCESS data to ${job.data}`);
-    const { userName, email } = job.data;
+  async registerUser(job: Job<UserDto>) {
+    const userDto = job.data;
     const mail = {
-      to: [email],
-      subject: 'Congratulations!',
+      to: [userDto.email],
+      subject: 'Congratulations! - From Car Rental System',
       from: process.env.ADMIN_EMAIL,
-      text: 'Dear ' + userName + ',\n',
-      html: `<h1>Congratulations on successfully registering your account!</h1>\n
-      <p>Best Regards,\nCar Rental System Admin.</p>
+      text: 'Dear ' + userDto.userName + ',\n',
+      html: `<h1>Congratulations on successfully registering your Car Rental System account!</h1>\n
+      <h2>Best Regards,</h2>
+      <h2>Car Rental System Admin.</h2>
       `,
     };
     this.sendgridService.send(mail);

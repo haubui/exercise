@@ -1,5 +1,5 @@
 export class TokenPayload {
-  userId: number;
-  userRole: number;
-  userEmail: string;
+  user_id: number;
+  user_role: number;
+  user_email: string;
 }

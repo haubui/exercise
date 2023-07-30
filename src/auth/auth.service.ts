@@ -40,9 +40,9 @@ export class AuthService {
       });
     }
     const payload = {
-      userId: user.id,
-      userEmail: email,
-      userRole: user.mappingRoleIdToRole(),
+      user_id: user.id,
+      user_email: email,
+      user_role: user.mappingRoleIdToRole(),
     };
     const loginResponseDto = new LoginResponseDto();
     const accessToken = await this.jwtService.signAsync(payload, {
@@ -55,9 +55,9 @@ export class AuthService {
     return loginResponseDto;
   }
 
-  async invalidTokenFamily(userId: number) {
+  async invalidTokenFamily(user_id: number) {
     const allTokenOfUser = await this.authModel.findAll({
-      where: { user_id: userId },
+      where: { user_id: user_id },
     });
     allTokenOfUser.forEach((token) => {
       token.is_valid = false;

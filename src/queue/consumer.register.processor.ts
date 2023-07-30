@@ -25,7 +25,7 @@ export class ComsumerRegisterProcessor {
       to: [userDto.email],
       subject: 'Congratulations! - From Car Rental System',
       from: process.env.ADMIN_EMAIL,
-      text: 'Dear ' + userDto.userName + ',\n',
+      text: 'Dear ' + userDto.user_name + ',\n',
       html: `<h1>Congratulations on successfully registering your Car Rental System account!</h1>\n
       <h2>Best Regards,</h2>
       <h2>Car Rental System Admin.</h2>

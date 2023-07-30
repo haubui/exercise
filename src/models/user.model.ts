@@ -48,10 +48,10 @@ export class User extends BaseModel {
 
   toUserResponseDto(): UserResponseDto {
     const userResponseDto = new UserResponseDto();
-    userResponseDto.userName = this.user_name;
+    userResponseDto.user_name = this.user_name;
     userResponseDto.email = this.email;
     userResponseDto.avatar_url = this.avatar_url;
-    userResponseDto.workTitle = this.work_title;
+    userResponseDto.work_title = this.work_title;
     userResponseDto.phone = this.phone;
     userResponseDto.address = this.address;
     userResponseDto.town_city = this.town_city;

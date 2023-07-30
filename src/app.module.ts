@@ -17,12 +17,11 @@ import { AppIntercepter } from './base/app.intercepter';
 import { CarRentalValidationPine } from './validate/validation.pine';
 import { AuthGuard } from './guards/auth.guard';
 import { RolesGuard } from './guards/role.guard';
-import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
+import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './background/bacground.tasks.module';
 import { CACHE_TIME_TO_LIVE, MAX_CACHE_ITEMS } from './constants/constants';
 import { CacheService } from './cache/cache.service';
-import { BullModule } from '@nestjs/bull';
 import { QueueModule } from './queue/queue.module';
 const logger = new Logger('SystemLog');
 

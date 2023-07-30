@@ -1,5 +1,4 @@
 import {
-  IsEmail,
   IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
@@ -7,20 +6,16 @@ import {
   ValidateIf,
 } from 'class-validator';
 
-export class UserDto {
-  user_role = process.env.USER_ROLE_ID.toString();
-
+export class UpdateUserDto {
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   user_name: string;
 
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   user_password: string;
-
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
 
   @IsString()
   @IsOptional()

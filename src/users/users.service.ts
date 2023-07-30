@@ -57,13 +57,13 @@ export class UsersService {
     try {
       const user = new User();
       user.email = userDto.email.trim().toLowerCase();
-      user.user_name = userDto.userName;
+      user.user_name = userDto.user_name;
       user.address = userDto.address;
       user.town_city = userDto.town_city;
       user.phone = userDto.phone;
-      user.password = await HashUtils.hash(userDto.userPassword);
+      user.password = await HashUtils.hash(userDto.user_password);
       user.avatar_url = userDto.avatar_url;
-      user.work_title = userDto.workTitle;
+      user.work_title = userDto.work_title;
       await user.save();
       this.registerQueue.add(REGISTER_USER_QUEUE_PROCESS, userDto);
       return user.toUserResponseDto();

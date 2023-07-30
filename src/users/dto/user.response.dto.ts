@@ -1,44 +1,30 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  ValidateIf,
-} from 'class-validator';
+import { Exclude, Expose } from 'class-transformer';
 
 export class UserResponseDto {
+  @Exclude()
   user_role = process.env.USER_ROLE_ID.toString();
 
-  @IsString()
-  @IsNotEmpty()
-  userName: string;
+  @Expose()
+  user_name: string;
 
-  @IsNotEmpty()
-  @IsEmail()
+  @Expose()
   email: string;
 
-  @IsString()
-  @IsOptional()
-  @ValidateIf((_, value) => value !== null)
+  @Expose()
   avatar_url: string | null;
 
-  @IsString()
-  @IsNotEmpty()
-  workTitle: string | null;
+  @Expose()
+  work_title: string | null;
 
-  @IsString()
-  @IsOptional()
+  @Expose()
   phone: string | null;
 
-  @IsString()
-  @IsOptional()
+  @Expose()
   address: string | null;
 
-  @IsString()
-  @IsOptional()
+  @Expose()
   town_city: string | null;
 
-  @IsString()
-  @IsOptional()
+  @Expose()
   country: string | null;
 }

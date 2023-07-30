@@ -20,4 +20,8 @@ export class CacheService {
   async deleteCacheTokenAfterLogout(token: string) {
     await this.cacheManager.del(token);
   }
+
+  async clearAllCache() {
+    await this.cacheManager.reset();
+  }
 }

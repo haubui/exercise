@@ -1,21 +1,30 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const dotenv = require('dotenv');
-dotenv.config();
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface
-      .createTable('user_roles', {
+      .createTable('car_statuses', {
         id: {
           allowNull: false,
+          autoIncrement: true,
           primaryKey: true,
-          type: Sequelize.STRING,
+          type: Sequelize.INTEGER,
         },
-        role: {
+        status: {
           allowNull: false,
           type: Sequelize.STRING,
-          defaultValue: 'user',
+        },
+        car_id: {
+          allowNull: false,
+          type: Sequelize.INTEGER,
+        },
+        start_time: {
+          allowNull: true,
+          type: Sequelize.DATE,
+        },
+        end_time: {
+          allowNull: true,
+          type: Sequelize.DATE,
         },
         createdAt: {
           type: Sequelize.DATE,
@@ -31,11 +40,11 @@ module.exports = {
         },
       })
       .then(() => {
-        queryInterface.addIndex('user_roles', ['role']);
+        queryInterface.addIndex('car_statuses', ['car_id', 'status']);
       });
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async down(queryInterface, _Sequelize) {
-    await queryInterface.dropTable('user_roles');
+    await queryInterface.dropTable('car_statuses');
   },
 };

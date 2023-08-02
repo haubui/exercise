@@ -23,6 +23,7 @@ import { TasksModule } from './background/bacground.tasks.module';
 import { CACHE_TIME_TO_LIVE, MAX_CACHE_ITEMS } from './constants/constants';
 import { CacheService } from './cache/cache.service';
 import { QueueModule } from './queue/queue.module';
+import { CarsModule } from './cars/cars.module';
 const logger = new Logger('SystemLog');
 
 @Module({
@@ -59,6 +60,7 @@ const logger = new Logger('SystemLog');
     ScheduleModule.forRoot(),
     TasksModule,
     QueueModule,
+    CarsModule,
   ],
   controllers: [AppController],
   providers: [

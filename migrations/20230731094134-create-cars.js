@@ -38,12 +38,12 @@ module.exports = {
           defaultValue: 70,
         },
         average_rate: {
-          allowNull: false,
+          allowNull: true,
           type: Sequelize.DECIMAL(1, 1),
           defaultValue: 0.0,
         },
         amount_review: {
-          allowNull: false,
+          allowNull: true,
           type: Sequelize.INTEGER,
           defaultValue: 0,
         },
@@ -69,6 +69,8 @@ module.exports = {
           'car_type_id',
           'name',
         ]);
+        queryInterface.addIndex('cars', ['car_steering_id', 'name']);
+        queryInterface.addIndex('cars', ['car_type_id', 'name']);
       });
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

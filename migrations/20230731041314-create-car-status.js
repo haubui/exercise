@@ -26,6 +26,14 @@ module.exports = {
           allowNull: true,
           type: Sequelize.DATE,
         },
+        pick_up_place: {
+          allowNull: true,
+          type: Sequelize.STRING,
+        },
+        drop_off_place: {
+          allowNull: true,
+          type: Sequelize.STRING,
+        },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,
@@ -40,6 +48,7 @@ module.exports = {
         },
       })
       .then(() => {
+        queryInterface.addIndex('car_statuses', ['car_id']);
         queryInterface.addIndex('car_statuses', ['car_id', 'status']);
       });
   },

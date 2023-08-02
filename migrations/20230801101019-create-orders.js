@@ -18,14 +18,6 @@ module.exports = {
           allowNull: false,
           type: Sequelize.INTEGER,
         },
-        rental_info_id: {
-          allowNull: false,
-          type: Sequelize.INTEGER,
-        },
-        billing_info_id: {
-          allowNull: false,
-          type: Sequelize.INTEGER,
-        },
         payment_method_id: {
           allowNull: false,
           type: Sequelize.INTEGER,
@@ -33,6 +25,38 @@ module.exports = {
         order_status_id: {
           allowNull: false,
           type: Sequelize.INTEGER,
+        },
+        pick_up_place: {
+          allowNull: false,
+          type: Sequelize.STRING,
+        },
+        pick_up_date: {
+          allowNull: false,
+          type: Sequelize.DATE,
+        },
+        drop_off_place: {
+          allowNull: false,
+          type: Sequelize.STRING,
+        },
+        drop_off_date: {
+          allowNull: false,
+          type: Sequelize.DATE,
+        },
+        billing_u_name: {
+          allowNull: false,
+          type: Sequelize.STRING,
+        },
+        billing_u_phone: {
+          allowNull: false,
+          type: Sequelize.STRING,
+        },
+        billing_u_address: {
+          allowNull: false,
+          type: Sequelize.TEXT,
+        },
+        billing_u_town_city: {
+          allowNull: false,
+          type: Sequelize.STRING,
         },
         createdAt: {
           type: Sequelize.DATE,
@@ -50,17 +74,20 @@ module.exports = {
       .then(() => {
         queryInterface.addIndex('orders', ['user_id']);
         queryInterface.addIndex('orders', ['car_id']);
-        queryInterface.addIndex('orders', ['rental_info_id']);
-        queryInterface.addIndex('orders', ['billing_info_id']);
         queryInterface.addIndex('orders', ['payment_method_id']);
         queryInterface.addIndex('orders', ['order_status_id']);
         queryInterface.addIndex('orders', [
           'user_id',
           'car_id',
-          'rental_info_id',
-          'billing_info_id',
           'payment_method_id',
           'order_status_id',
+        ]);
+        queryInterface.addIndex('orders', ['billing_u_name']);
+        queryInterface.addIndex('orders', ['billing_u_phone']);
+        queryInterface.addIndex('orders', ['billing_u_town_city']);
+        queryInterface.addIndex('orders', [
+          'billing_u_phone',
+          'billing_u_town_city',
         ]);
       });
   },

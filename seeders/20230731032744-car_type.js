@@ -6,32 +6,38 @@ module.exports = {
   async up(queryInterface, _Sequelize) {
     const carTypes = [
       {
+        type: 'Sport',
+        amount: '0',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
         type: 'SUV',
-        amount: '5',
+        amount: '0',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         type: 'MPV',
-        amount: '3',
+        amount: '0',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         type: 'Sedan',
-        amount: '5',
+        amount: '0',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         type: 'Coupe',
-        amount: '2',
+        amount: '0',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         type: 'Hatchback',
-        amount: '1',
+        amount: '0',
         createdAt: new Date(),
         updatedAt: new Date(),
       },

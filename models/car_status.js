@@ -19,6 +19,8 @@ module.exports = (sequelize, DataTypes) => {
       car_id: DataTypes.INTEGER,
       start_time: DataTypes.DATE,
       end_time: DataTypes.DATE,
+      pick_up_place: DataTypes.STRING,
+      drop_off_place: DataTypes.STRING,
     },
     {
       sequelize,

@@ -14,10 +14,20 @@ import { ResponseUtils } from 'src/base/response.utils';
 export class CarRentalValidationPine implements PipeTransform<any> {
   async transform(value: any, metadata: ArgumentMetadata) {
     const { metatype } = metadata;
+    console.log('metatype', metatype, !metatype, !this.toValidate(metatype));
     if (!metatype || !this.toValidate(metatype)) {
+      console.log(value);
       return value;
     }
+    console.log(
+      'passed if and run to plainToInStance',
+      metatype,
+      !metatype,
+      !this.toValidate(metatype),
+    );
+    console.log(value);
     const object = plainToInstance(metatype, value);
+    console.log(object);
     const validationErrors = await validate(object);
     if (validationErrors.length > 0) {
       const errors: Array<DetailError> = validationErrors.map((error) =>

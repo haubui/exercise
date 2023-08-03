@@ -83,6 +83,7 @@ async function validateRequest(
       return true;
     }
   } catch (error) {
+    console.log(' error t ', error);
     ResponseUtils.throwErrorException(HttpStatus.UNAUTHORIZED, {
       message: UnauthorizedException.name,
     });

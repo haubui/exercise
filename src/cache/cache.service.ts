@@ -1,6 +1,7 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import { HashUtils } from 'src/auth/hash.util';
 import { TokenPayload } from 'src/auth/token.payload';
 
 @Injectable()

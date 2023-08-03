@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       car_id: DataTypes.INTEGER,
       price_rent_per_day: DataTypes.DECIMAL,
+      discount_start: DataTypes.DATE,
       discount_price: DataTypes.DECIMAL,
       discount_until: DataTypes.DATE,
     },

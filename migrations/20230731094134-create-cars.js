@@ -47,6 +47,11 @@ module.exports = {
           type: Sequelize.INTEGER,
           defaultValue: 0,
         },
+        current_price: {
+          allowNull: true,
+          type: Sequelize.DECIMAL(10, 2),
+          defaultValue: 0.0,
+        },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,

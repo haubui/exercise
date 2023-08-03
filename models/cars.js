@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       gasoline: DataTypes.SMALLINT,
       average_rate: DataTypes.DECIMAL,
       amount_review: DataTypes.INTEGER,
+      current_price: DataTypes.DECIMAL,
     },
     {
       sequelize,

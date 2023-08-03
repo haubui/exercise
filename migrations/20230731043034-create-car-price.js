@@ -18,6 +18,10 @@ module.exports = {
           allowNull: false,
           type: Sequelize.DECIMAL(10, 2),
         },
+        discount_start: {
+          allowNull: true,
+          type: Sequelize.DATE,
+        },
         discount_price: {
           allowNull: true,
           type: Sequelize.DECIMAL(10, 2),

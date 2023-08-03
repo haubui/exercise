@@ -36,7 +36,6 @@ export class CarsService {
 
   async createCar(userDto: CreateCarDto): Promise<CarResponseDto> {
     const newCar = plainToInstance(Car, userDto);
-    console.log(newCar);
     try {
       const carDto = await newCar.save();
       return carDto;

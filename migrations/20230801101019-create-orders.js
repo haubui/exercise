@@ -58,6 +58,11 @@ module.exports = {
           allowNull: false,
           type: Sequelize.STRING,
         },
+        car_price_ordered: {
+          allowNull: false,
+          type: Sequelize.DECIMAL(10, 2),
+          defaultValue: 0.0,
+        },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,

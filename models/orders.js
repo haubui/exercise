@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       billing_u_phone: DataTypes.STRING,
       billing_u_address: DataTypes.TEXT,
       billing_u_town_city: DataTypes.STRING,
+      car_price_ordered: DataTypes.DECIMAL,
     },
     {
       sequelize,

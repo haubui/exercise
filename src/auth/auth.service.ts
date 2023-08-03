@@ -66,9 +66,10 @@ export class AuthService {
   }
 
   async saveUserToken(user_id: number, user_token: string) {
+    const tokenHashed = await HashUtils.hashBM(user_token);
     const auths = new Auths();
     auths.user_id = user_id;
-    auths.user_token = user_token;
+    auths.user_token = tokenHashed;
     auths.createdAt = new Date();
     auths.updatedAt = new Date();
     auths.is_valid = true;
@@ -88,9 +89,18 @@ export class AuthService {
   }
 
   async didUserLogoutThisToken(token: string): Promise<boolean> {
+    console.log('didUserLogoutThisToken origin ', token);
+    const tokenHashed = await HashUtils.hashBM(token);
+    const tokenHashedSecondTime = await HashUtils.hashBM(token);
+    console.log('didUserLogoutThisToken', tokenHashed);
+    console.log(
+      'didUserLogoutThisToken tokenHashedSecondTime ',
+      tokenHashedSecondTime,
+    );
     const userHaveToken = await this.authModel.findOne({
-      where: { user_token: token },
+      where: { user_token: tokenHashed },
     });
+    console.log('didUserLogoutThisToken userHaveToken ', userHaveToken);
     return userHaveToken.is_valid;
   }
 }

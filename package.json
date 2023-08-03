@@ -38,6 +38,7 @@
     "cache-manager": "^5.2.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "crypto-js": "^4.1.1",
     "dotenv": "^16.3.1",
     "es6-shim": "^0.35.8",
     "joi": "^17.9.2",

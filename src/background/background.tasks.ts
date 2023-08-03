@@ -12,7 +12,10 @@ export class TasksService {
   @Interval(120000) // Runs every 2 minutes
   deleteSomething() {
     // Perform your delete logic here
-    console.log('Deleting un use data, Runs every 2 minutes ...');
+    console.log(
+      'Deleting un use data, Runs every 2 minutes ...',
+      Math.floor(100000 + Math.random() * 900000),
+    );
   }
 
   @Timeout(60000) // Runs after 1 minute

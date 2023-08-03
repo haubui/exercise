@@ -28,18 +28,23 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'cars',
-      hooks: {
-        afterCreate: (car, options) => {
-          sequelize.query(
-            'CREATE TRIGGER create_car_config AFTER INSERT ON cars FOR EACH ROW BEGIN UPDATE car_types SET amount = (select count(*) from cars where cars.car_type_id = car_types.id); END;',
-          );
-        },
-        afterDestroy: (car, options) => {
-          sequelize.query(
-            'CREATE TRIGGER create_car_config AFTER DELETE ON cars FOR EACH ROW BEGIN UPDATE car_types SET amount = (select count(*) from cars where cars.car_type_id = car_types.id); END;',
-          );
-        },
-      },
+      // hooks: {
+      //   afterCreate: (car, options) => {
+      //     sequelize.query(
+      //       'UPDATE car_types SET amount = (select count(*) from cars where car.car_type_id = car_types.id);',
+      //     );
+      //   },
+      //   afterUpdate: (car, options) => {
+      //     sequelize.query(
+      //       'UPDATE car_types SET amount = (select count(*) from cars where car.car_type_id = car_types.id);',
+      //     );
+      //   },
+      //   afterDestroy: (car, options) => {
+      //     sequelize.query(
+      //       'UPDATE car_types SET amount = (select count(*) from cars where car.car_type_id = car_types.id);',
+      //     );
+      //   },
+      // },
     },
   );
   return cars;

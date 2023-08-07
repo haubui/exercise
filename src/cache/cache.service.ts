@@ -9,17 +9,20 @@ export class CacheService {
   constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
 
   async saveToken(token: string, payload: TokenPayload): Promise<void> {
-    await this.cacheManager.set(token, payload);
+    const keySaved = await HashUtils.hashBM(token);
+    await this.cacheManager.set(keySaved, payload);
   }
 
   async getPayloadFromTokenInCache(
     tokenFromRequest: string,
   ): Promise<TokenPayload> {
-    return await this.cacheManager.get(tokenFromRequest);
+    const keySaved = await HashUtils.hashBM(tokenFromRequest);
+    return await this.cacheManager.get(keySaved);
   }
 
   async deleteCacheTokenAfterLogout(token: string) {
-    await this.cacheManager.del(token);
+    const keySaved = await HashUtils.hashBM(token);
+    await this.cacheManager.del(keySaved);
   }
 
   async clearAllCache() {

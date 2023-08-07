@@ -42,7 +42,7 @@ module.exports = {
           type: Sequelize.DECIMAL(1, 1),
           defaultValue: 0.0,
         },
-        amount_review: {
+        amount_reviews: {
           allowNull: true,
           type: Sequelize.INTEGER,
           defaultValue: 0,

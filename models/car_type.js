@@ -11,7 +11,11 @@ module.exports = (sequelize, DataTypes) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     static associate(_models) {
       // define association here
+      this.hasMany(_models.cars, { as: 'cars', foreignKey: 'car_type_id' });
     }
+    // User.associate = function(models) {
+    //   User.hasMany(models.Tour, {as: 'Tours', foreignKey: 'userId'});
+    // };
   }
   car_type.init(
     {

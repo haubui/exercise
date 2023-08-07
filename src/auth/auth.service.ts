@@ -77,10 +77,18 @@ export class AuthService {
   }
 
   async logOut(token: string) {
+    console.log('logOut', token);
     if (token) {
+      const tokenHasedBM = await HashUtils.hashBM(token);
       const userHaveToken = await this.authModel.findOne({
-        where: { user_token: token },
+        where: { user_token: tokenHasedBM },
       });
+      if (!userHaveToken) {
+        throw ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+          message: 'User is not found',
+        });
+      }
+      console.log('userHaveToken', userHaveToken);
       await this.invalidTokenFamily(userHaveToken.user_id);
       await this.cacheService.deleteCacheTokenAfterLogout(token);
     } else {

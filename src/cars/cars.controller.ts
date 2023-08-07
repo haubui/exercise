@@ -8,12 +8,16 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 import { Role, Roles } from 'src/guards/role.decorator';
 import { CarResponseDto } from './dto/car-response.dto';
+import { PagingCarDto } from './dto/paging-cars.dto';
+import { PagingResponse } from './dto/paging-cars-response.dto';
+import { Public } from 'src/guards/public.decorator';
 
 @Controller('cars')
 export class CarsController {
@@ -32,9 +36,10 @@ export class CarsController {
     return this.carsService.create(createCarDto);
   }
 
-  @Get()
-  findAll() {
-    return this.carsService.findAll();
+  @Get('search')
+  @Public()
+  async findAll(@Query() pagingCarDto: PagingCarDto): Promise<PagingResponse> {
+    return await this.carsService.findAll(pagingCarDto);
   }
 
   @Get(':id')

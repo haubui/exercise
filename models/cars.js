@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     static associate(_models) {
-      // define association here
+      // this.belongsTo(_models.car_type, {as: 'CarType', foreignKey: 'car_type_id' })
     }
   }
   cars.init(
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       capability: DataTypes.SMALLINT,
       gasoline: DataTypes.SMALLINT,
       average_rate: DataTypes.DECIMAL,
-      amount_review: DataTypes.INTEGER,
+      amount_reviews: DataTypes.INTEGER,
       current_price: DataTypes.DECIMAL,
     },
     {

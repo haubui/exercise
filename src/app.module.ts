@@ -24,6 +24,7 @@ import { CACHE_TIME_TO_LIVE, MAX_CACHE_ITEMS } from './constants/constants';
 import { CacheService } from './cache/cache.service';
 import { QueueModule } from './queue/queue.module';
 import { CarsModule } from './cars/cars.module';
+import { OrdersModule } from './orders/orders.module';
 const logger = new Logger('SystemLog');
 
 @Module({
@@ -61,6 +62,7 @@ const logger = new Logger('SystemLog');
     TasksModule,
     QueueModule,
     CarsModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [

@@ -18,6 +18,7 @@ import { CarResponseDto } from './dto/car-response.dto';
 import { PagingCarDto } from './dto/paging-cars.dto';
 import { PagingResponse } from './dto/paging-cars-response.dto';
 import { Public } from 'src/guards/public.decorator';
+import { CarDetailDto } from './dto/detail-car-queries.dto';
 
 @Controller('cars')
 export class CarsController {
@@ -42,9 +43,9 @@ export class CarsController {
     return await this.carsService.findAllAvailableCarForRent(pagingCarDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.carsService.findOne(+id);
+  @Get('detail')
+  findOne(@Query() carDetail: CarDetailDto) {
+    return this.carsService.findOne(carDetail.car_id);
   }
 
   @Patch(':id')

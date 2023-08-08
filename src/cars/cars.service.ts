@@ -27,7 +27,18 @@ export class CarsService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} car`;
+    return this.carModel.findOne({
+      where: {
+        id: id,
+      },
+      include: [
+        { model: CarType },
+        { model: CarSteering },
+        { model: CarPrice },
+        { model: CarStatus },
+        { model: CarImages },
+      ],
+    });
   }
 
   update(id: number, updateCarDto: UpdateCarDto) {

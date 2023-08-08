@@ -59,6 +59,7 @@ export class UsersService {
       user.email = userDto.email.trim().toLowerCase();
       user.user_name = userDto.user_name;
       user.address = userDto.address;
+      user.role_id = process.env.USER_ROLE_ID.toString();
       user.town_city = userDto.town_city;
       user.phone = userDto.phone;
       user.password = await HashUtils.hash(userDto.user_password);

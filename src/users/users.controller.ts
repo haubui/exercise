@@ -44,6 +44,7 @@ export class UsersController {
   @Post('profile')
   @Roles(Role.User)
   async getAUser(@Req() request: any): Promise<UserResponseDto> {
+    console.log('profile', request);
     const user = await this.usersService.findOneById(
       request.user.user_id.toString(),
     );

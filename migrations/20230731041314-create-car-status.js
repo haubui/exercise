@@ -21,10 +21,47 @@ module.exports = {
         start_time: {
           allowNull: true,
           type: Sequelize.DATE,
+          validate: {
+            isBeforeEnd: function (value) {
+              if (
+                this.end_time !== null &&
+                !isNaN(value) &&
+                new Date(value) <= new Date()
+              ) {
+                throw new Error('Start time must be after the current time');
+              }
+              if (
+                this.end_time !== null &&
+                !isNaN(value) &&
+                new Date(value) >= new Date(this.end_time)
+              ) {
+                throw new Error('Start time must be before end time');
+              }
+            },
+          },
         },
         end_time: {
           allowNull: true,
           type: Sequelize.DATE,
+          validate: {
+            isAfterStart: function (value) {
+              if (
+                value !== null &&
+                !isNaN(value) &&
+                new Date(value) <= new Date()
+              ) {
+                throw new Error('End time must be after the current time');
+              }
+              if (
+                value !== null &&
+                this.start_time &&
+                !isNaN(value) &&
+                new Date(value) <= new Date(this.start_time)
+              ) {
+                throw new Error('End time must be after start time');
+              }
+            },
+          },
         },
         pick_up_place: {
           allowNull: true,

@@ -39,7 +39,7 @@ export class CarsController {
   @Get('search')
   @Public()
   async findAll(@Query() pagingCarDto: PagingCarDto): Promise<PagingResponse> {
-    return await this.carsService.findAll(pagingCarDto);
+    return await this.carsService.findAllAvailableCarForRent(pagingCarDto);
   }
 
   @Get(':id')

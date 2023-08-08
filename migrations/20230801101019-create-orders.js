@@ -33,6 +33,24 @@ module.exports = {
         pick_up_date: {
           allowNull: false,
           type: Sequelize.DATE,
+          validate: {
+            isBeforeEnd: function (value) {
+              if (
+                this.drop_off_date !== null &&
+                !isNaN(value) &&
+                new Date(value) <= new Date()
+              ) {
+                throw new Error('pick_up_date must be after the current time');
+              }
+              if (
+                this.drop_off_date !== null &&
+                !isNaN(value) &&
+                new Date(value) >= new Date(this.drop_off_date)
+              ) {
+                throw new Error('pick_up_date must be before drop_off_date');
+              }
+            },
+          },
         },
         drop_off_place: {
           allowNull: false,
@@ -41,6 +59,25 @@ module.exports = {
         drop_off_date: {
           allowNull: false,
           type: Sequelize.DATE,
+          validate: {
+            isAfterStart: function (value) {
+              if (
+                value !== null &&
+                !isNaN(value) &&
+                new Date(value) <= new Date()
+              ) {
+                throw new Error('drop_off_date must be after the current time');
+              }
+              if (
+                value !== null &&
+                this.pick_up_date &&
+                !isNaN(value) &&
+                new Date(value) <= new Date(this.pick_up_date)
+              ) {
+                throw new Error('drop_off_date must be after pick_up_date');
+              }
+            },
+          },
         },
         billing_u_name: {
           allowNull: false,

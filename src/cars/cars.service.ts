@@ -49,8 +49,56 @@ export class CarsService {
     }
   }
 
-  async findAll(pagingCarDto: PagingCarDto): Promise<PagingResponse> {
+  async findAllAvailableCarForRent(
+    pagingCarDto: PagingCarDto,
+  ): Promise<PagingResponse> {
     console.log(pagingCarDto);
+    const currentDate = new Date();
+    const pickUpDate = pagingCarDto.pick_up_date;
+    const dropOffDate = pagingCarDto.drop_off_date;
+    const carRented = await this.carModel.findAll({
+      include: [
+        {
+          model: CarStatus,
+          where: {
+            [Op.and]: [
+              {
+                status: {
+                  [Op.in]: ['PENDING', 'HIRRING', 'NOT_RETURNED', 'FIXING'],
+                },
+              },
+              pickUpDate
+                ? {
+                    [Op.and]: [
+                      {
+                        start_time: { [Op.gte]: currentDate },
+                        end_time: { [Op.gte]: currentDate },
+                      },
+                      {
+                        start_time: { [Op.lt]: pickUpDate },
+                      },
+                      { end_time: { [Op.gt]: pickUpDate } },
+                    ],
+                  }
+                : {},
+              dropOffDate
+                ? {
+                    [Op.and]: [
+                      {
+                        start_time: { [Op.gte]: currentDate },
+                        end_time: { [Op.gte]: currentDate },
+                      },
+                      { start_time: { [Op.lt]: dropOffDate } },
+                      { end_time: { [Op.gt]: dropOffDate } },
+                    ],
+                  }
+                : {},
+            ],
+          },
+        },
+      ],
+    });
+    const carsRentedIds = carRented.map((car) => car.id);
     const allCarsFound = await this.carModel.findAndCountAll({
       where: {
         [Op.and]: [
@@ -104,22 +152,70 @@ export class CarsService {
         {
           model: CarStatus,
           where: {
-            [Op.and]: [
-              { status: 'AVAILABLE' },
-              pagingCarDto.pick_up_date
-                ? {
-                    [Op.and]: [
-                      { start_time: { [Op.gte]: pagingCarDto.pick_up_date } },
-                    ],
-                  }
-                : {},
-              pagingCarDto.drop_off_date
-                ? {
-                    [Op.and]: [
-                      { end_time: { [Op.gte]: pagingCarDto.drop_off_date } },
-                    ],
-                  }
-                : {},
+            [Op.or]: [
+              {
+                [Op.and]: [
+                  { status: 'AVAILABLE' },
+                  pagingCarDto.pick_up_date
+                    ? {
+                        [Op.and]: [
+                          {
+                            start_time: { [Op.lte]: pagingCarDto.pick_up_date },
+                          },
+                          { start_time: { [Op.lt]: currentDate } },
+                        ],
+                      }
+                    : {},
+                  pagingCarDto.drop_off_date
+                    ? {
+                        [Op.or]: [
+                          { end_time: null },
+                          {
+                            end_time: { [Op.lt]: pagingCarDto.drop_off_date },
+                          },
+                        ],
+                      }
+                    : {},
+                  {
+                    car_id: { [Op.notIn]: carsRentedIds },
+                  },
+                ],
+              },
+              {
+                [Op.and]: [
+                  {
+                    status: {
+                      [Op.in]: ['PENDING', 'HIRRING', 'NOT_RETURNED', 'FIXING'],
+                    },
+                  },
+                  pickUpDate
+                    ? {
+                        [Op.and]: [
+                          {
+                            start_time: { [Op.gte]: currentDate },
+                            end_time: { [Op.gte]: currentDate },
+                          },
+                          {
+                            start_time: { [Op.lt]: pickUpDate },
+                          },
+                          { end_time: { [Op.lt]: pickUpDate } },
+                        ],
+                      }
+                    : {},
+                  dropOffDate
+                    ? {
+                        [Op.and]: [
+                          {
+                            start_time: { [Op.gte]: currentDate },
+                            end_time: { [Op.gte]: currentDate },
+                          },
+                          { start_time: { [Op.gt]: dropOffDate } },
+                          { end_time: { [Op.gt]: dropOffDate } },
+                        ],
+                      }
+                    : {},
+                ],
+              },
             ],
           },
         },

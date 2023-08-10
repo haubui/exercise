@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
 const logger = new Logger('SystemLog');
 import * as UUID from 'uuid';
+import * as multer from 'multer';
+import * as path from 'path';
 
 async function bootstrap() {
   logger.debug('bootstrap start running....');

@@ -20,7 +20,20 @@ export class CarsService {
   constructor(
     @InjectModel(Car)
     private carModel: typeof Car,
+    @InjectModel(CarImages)
+    private carImageModel: typeof CarImages,
   ) {}
+
+  async addCarImageForId(carId: string, imagePath: string) {
+    const allImageOfACar = await this.carImageModel.findAndCountAll({
+      where: { car_id: carId },
+    });
+    const carImage = new CarImages();
+    carImage.car_id = Number(carId);
+    carImage.url = imagePath;
+    carImage.order = allImageOfACar.count;
+    carImage.save();
+  }
 
   create(createCarDto: CreateCarDto) {
     return 'This action adds a new car';

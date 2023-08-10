@@ -9,6 +9,8 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
@@ -19,6 +21,8 @@ import { PagingCarDto } from './dto/paging-cars.dto';
 import { PagingResponse } from './dto/paging-cars-response.dto';
 import { Public } from 'src/guards/public.decorator';
 import { CarDetailDto } from './dto/detail-car-queries.dto';
+import { MulterFile } from 'multer';
+import { CarsFileInterceptor } from './cars.intercepters';
 
 @Controller('cars')
 export class CarsController {
@@ -35,6 +39,18 @@ export class CarsController {
   @Post()
   create(@Body() createCarDto: CreateCarDto) {
     return this.carsService.create(createCarDto);
+  }
+
+  @Post('upload')
+  @UseInterceptors(new CarsFileInterceptor())
+  uploadImage(
+    @UploadedFile() file: MulterFile,
+    @Query('carId') carId: string,
+  ): string {
+    console.log(file.originalname);
+    this.carsService.addCarImageForId(carId, file.path);
+    console.log('carId', carId);
+    return file.path;
   }
 
   @Get('search')

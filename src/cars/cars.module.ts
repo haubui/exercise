@@ -8,6 +8,8 @@ import { CarPrice } from './entities/car-price.model';
 import { CarSteering } from './entities/car-steering.model';
 import { CarType } from './entities/car-type.model';
 import { CarImages } from './entities/car-image.model';
+import { MulterModule } from '@nestjs/platform-express';
+import { CarsFileInterceptor } from './cars.intercepters';
 
 @Module({
   imports: [
@@ -19,8 +21,9 @@ import { CarImages } from './entities/car-image.model';
       CarType,
       CarImages,
     ]),
+    MulterModule.register(),
   ],
   controllers: [CarsController],
-  providers: [CarsService],
+  providers: [CarsService, CarsFileInterceptor],
 })
 export class CarsModule {}

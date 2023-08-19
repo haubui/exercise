@@ -5,7 +5,7 @@ import { CarResponseDto } from './dto/car-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { Car } from './entities/car.model';
 import { InjectModel } from '@nestjs/sequelize';
-import { ResponseUtils } from 'src/base/response.utils';
+import { ResponseUtils } from '../../src/base/response.utils';
 import { PagingCarDto } from './dto/paging-cars.dto';
 import { PagingResponse } from './dto/paging-cars-response.dto';
 import { CarType } from './entities/car-type.model';

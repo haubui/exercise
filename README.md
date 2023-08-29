@@ -56,6 +56,9 @@ $ npm run test:e2e
 
 # test coverage
 $ npm run test:cov
+
+# Run a test matching the specified
+$ npm test  cars.service.spec.ts -t "should return a paging response of available cars for rent"
 ```
 
 ## Support

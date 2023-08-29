@@ -36,11 +36,6 @@ export class CarsController {
     return this.carsService.createCar(createCarDto);
   }
 
-  @Post()
-  create(@Body() createCarDto: CreateCarDto) {
-    return this.carsService.create(createCarDto);
-  }
-
   @Post('upload')
   @UseInterceptors(new CarsFileInterceptor())
   uploadImage(

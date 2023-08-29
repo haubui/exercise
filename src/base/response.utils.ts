@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { BaseResponse } from './baseresponse';
 import { Error, DetailError, ErrorResponse } from './error.response';
+import { ERROR_CODES } from './error.code';
 
 export class ResponseUtils {
   static generateSuccessResponse({
@@ -37,9 +38,9 @@ export class ResponseUtils {
     title?: string,
   ): Error {
     return {
-      code: options?.code ?? errorCode,
-      title: options?.title ?? title ?? '',
-      message: options?.message ?? '',
+      code: options?.code ?? errorCode ?? ERROR_CODES.GENERRAL.error_code,
+      title: options?.title ?? title ?? ERROR_CODES.GENERRAL.title,
+      message: options?.message ?? ERROR_CODES.GENERRAL.message,
       errors: options?.errors ?? null,
     };
   }
@@ -52,7 +53,7 @@ export class ResponseUtils {
     };
   }
 
-  static throwErrorException(httpStatus: HttpStatus, options?: Error) {
+  static throwErrorException(httpStatus?: HttpStatus, options?: Error) {
     switch (httpStatus) {
       case HttpStatus.BAD_REQUEST: {
         const error = this.generateError(

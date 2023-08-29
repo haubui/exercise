@@ -58,6 +58,13 @@ async function validateRequest(
   }
   try {
     if (token) {
+      const cachePayload: TokenPayload =
+        await cacheService.getPayloadFromTokenInCache(token);
+      if (!(cachePayload === undefined)) {
+        request.user = cachePayload;
+        console.log('payload from cache ', cachePayload);
+        return true;
+      }
       const didUserLogoutThisToken = await authService.didUserLogoutThisToken(
         token,
       );
@@ -66,13 +73,6 @@ async function validateRequest(
           message: UnauthorizedException.name,
         });
         return false;
-      }
-      const cachePayload: TokenPayload =
-        await cacheService.getPayloadFromTokenInCache(token);
-      if (!(cachePayload === undefined)) {
-        request.user = cachePayload;
-        console.log('payload from cache ', cachePayload);
-        return true;
       }
       const payload: TokenPayload = await jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,

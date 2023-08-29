@@ -24,8 +24,12 @@ module.exports = {
         },
         rating: {
           allowNull: false,
-          type: Sequelize.DECIMAL(1, 1),
+          type: Sequelize.DECIMAL(2, 1), // Changed the precision to (2, 1)
           defaultValue: 0.0,
+          validate: {
+            min: 1.0,
+            max: 5.0,
+          },
         },
         createdAt: {
           type: Sequelize.DATE,

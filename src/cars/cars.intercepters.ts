@@ -15,7 +15,7 @@ export class CarsFileInterceptor extends FileInterceptor('image') {
         callback(null, true);
       },
       storage: multer.diskStorage({
-        destination: './uploads',
+        destination: process.env.CAR_IMAGES_RESOURCES,
         filename: (_, file, callback) => {
           const randomName = uuidv4();
           const extension = extname(file.originalname);

@@ -17,6 +17,7 @@ export class CarRentalValidationPine implements PipeTransform<any> {
     if (!metatype || !this.toValidate(metatype)) {
       return value;
     }
+    console.log(value);
     const object = plainToInstance(metatype, value);
     const validationErrors = await validate(object);
     if (validationErrors.length > 0) {

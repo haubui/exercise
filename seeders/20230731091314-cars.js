@@ -46,7 +46,7 @@ module.exports = {
     listCars.forEach((car) => {
       var aImage = {
         car_id: car.id,
-        url: `resouces/cars/${car.id}.png`,
+        url: `${process.env.CAR_IMAGES_RESOURCES}/${car.id}.png`,
         order: car.id,
       };
       var aPrice = {

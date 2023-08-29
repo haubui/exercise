@@ -25,6 +25,7 @@ import { CacheService } from './cache/cache.service';
 import { QueueModule } from './queue/queue.module';
 import { CarsModule } from './cars/cars.module';
 import { OrdersModule } from './orders/orders.module';
+import { ReviewsModule } from './reviews/reviews.module';
 const logger = new Logger('SystemLog');
 
 @Module({
@@ -63,6 +64,7 @@ const logger = new Logger('SystemLog');
     QueueModule,
     CarsModule,
     OrdersModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [

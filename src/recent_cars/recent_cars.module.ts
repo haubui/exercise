@@ -13,6 +13,7 @@ import { CarPrice } from 'src/cars/entities/car-price.model';
 import { CarSteering } from 'src/cars/entities/car-steering.model';
 import { CarType } from 'src/cars/entities/car-type.model';
 import { UsersModule } from 'src/users/users.module';
+import { QueueModule } from 'src/queue/queue.module';
 
 @Module({
   controllers: [RecentCarsController],
@@ -29,6 +30,7 @@ import { UsersModule } from 'src/users/users.module';
     ]),
     CarsModule,
     UsersModule,
+    QueueModule,
   ],
 })
 export class RecentCarsModule {}

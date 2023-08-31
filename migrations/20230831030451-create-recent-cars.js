@@ -3,7 +3,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface
-      .createTable('favorites', {
+      .createTable('recent_cars', {
         id: {
           allowNull: false,
           autoIncrement: true,
@@ -32,12 +32,13 @@ module.exports = {
         },
       })
       .then(() => {
-        queryInterface.addIndex('favorites', ['user_id']);
-        queryInterface.addIndex('favorites', ['user_id', 'car_id']);
+        queryInterface.addIndex('recent_cars', ['user_id']);
+        queryInterface.addIndex('recent_cars', ['car_id']);
+        queryInterface.addIndex('recent_cars', ['car_id', 'user_id']);
       });
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async down(queryInterface, _Sequelize) {
-    await queryInterface.dropTable('favorites');
+    await queryInterface.dropTable('recent_cars');
   },
 };

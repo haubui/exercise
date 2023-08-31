@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { plainToInstance } from 'class-transformer';
-import { Review } from './entities/review.entity';
+import { Review } from './entities/review.model';
 import { UsersService } from 'src/users/users.service';
 import { ResponseUtils } from 'src/base/response.utils';
 import { CarsService } from 'src/cars/cars.service';

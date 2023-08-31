@@ -55,7 +55,7 @@ export class CarsController {
   }
 
   @Get('detail')
-  findOne(@Query() carDetail: CarDetailDto) {
+  findOneDetailCar(@Query() carDetail: CarDetailDto) {
     return this.carsService.findOne(carDetail.car_id);
   }
 

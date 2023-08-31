@@ -27,6 +27,21 @@ export class CarsService {
     private carImageModel: typeof CarImages,
   ) {}
 
+  async getRecentCarsVisitedByUser(recentCarsVisitedIds: number[]) {
+    try {
+      return this.carModel.findAll({
+        where: {
+          id: { [Op.in]: recentCarsVisitedIds },
+        },
+        group: ['user_id'],
+        limit: 10,
+      });
+    } catch (err) {
+      console.log(err);
+      ResponseUtils.throwErrorException();
+    }
+  }
+
   async updateEverageReviewForACard(
     car_id: number,
     rating: number,
@@ -71,7 +86,7 @@ export class CarsService {
 
   findOne(id: number) {
     try {
-      return this.carModel.findOne({
+      const aCarFullInfo = this.carModel.findOne({
         where: {
           id: id,
         },
@@ -83,6 +98,13 @@ export class CarsService {
           { model: CarImages },
         ],
       });
+      if (aCarFullInfo === null) {
+        ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+          code: ERROR_CODES.CAR_NOT_FOUND.error_code,
+          message: ERROR_CODES.CAR_NOT_FOUND.message,
+        });
+      }
+      return aCarFullInfo;
     } catch (err) {
       console.log(err);
       ResponseUtils.throwErrorException();
@@ -348,12 +370,13 @@ export class CarsService {
             order: [['order', 'ASC']],
           },
         ],
+        group: ['id'],
         limit: pagingCarDto.limit ? +pagingCarDto.limit : 1000,
         offset: pagingCarDto.offset ? +pagingCarDto.offset : 0,
       });
       return new PagingResponse(
         allCarsFound.rows,
-        allCarsFound.count,
+        +allCarsFound.count.length,
         +pagingCarDto.offset,
         +pagingCarDto.limit,
       );

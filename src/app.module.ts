@@ -26,6 +26,7 @@ import { QueueModule } from './queue/queue.module';
 import { CarsModule } from './cars/cars.module';
 import { OrdersModule } from './orders/orders.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { RecentCarsModule } from './recent_cars/recent_cars.module';
 const logger = new Logger('SystemLog');
 
 @Module({
@@ -65,6 +66,7 @@ const logger = new Logger('SystemLog');
     CarsModule,
     OrdersModule,
     ReviewsModule,
+    RecentCarsModule,
   ],
   controllers: [AppController],
   providers: [

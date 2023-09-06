@@ -27,9 +27,9 @@ export class CreateReviewDto {
   rating: number;
   @IsNotEmpty()
   @IsString()
-  @Matches(/^(\w+\s*){3,1000}$/, {
+  @Matches(/^(\w+\s*|\W+){3,}$/, {
     message:
-      'The field [comment] must contain at least 3 words and less than 1000 words',
+      'The field [comment] must contain only letters, numbers, and spaces',
   })
   @MaxLength(10000, {
     message: 'The field [comment] can have a maximum of 10000 characters',

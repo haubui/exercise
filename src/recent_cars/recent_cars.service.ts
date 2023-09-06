@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { plainToInstance } from 'class-transformer';
 import { ERROR_CODES } from 'src/base/error.code';
@@ -16,11 +16,11 @@ export class RecentCarsService {
     @InjectModel(RecentCar)
     private recentCarModel: typeof RecentCar,
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => CarsService))
     private readonly carService: CarsService,
   ) {}
   async create(createRecentCarDto: CreateRecentCarDto) {
     try {
-      const transaction = await sequelizeGloble.transaction();
       const userVisitedCar = await this.usersService.findOneById(
         createRecentCarDto.user_id.toString(),
       );
@@ -42,12 +42,10 @@ export class RecentCarsService {
 
       try {
         const newRecentCar = plainToInstance(RecentCar, createRecentCarDto);
-        const recentCar = await newRecentCar.save({ transaction });
-        await transaction.commit();
+        const recentCar = await newRecentCar.save();
         return recentCar;
       } catch (ex) {
         console.log(ex);
-        transaction.rollback();
         ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST);
       }
     } catch (e) {
@@ -58,9 +56,15 @@ export class RecentCarsService {
 
   async findAllRecentCarByUser(user_id: string) {
     try {
-      const transaction = await sequelizeGloble.transaction();
-      const userVisitedCar = await this.usersService.findOneById(user_id);
-      if (userVisitedCar == null) {
+      try {
+        const userVisitedCar = await this.usersService.findOneById(user_id);
+        if (!userVisitedCar) {
+          ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+            code: ERROR_CODES.USER_NOT_FOUND.error_code,
+            message: ERROR_CODES.USER_NOT_FOUND.message,
+          });
+        }
+      } catch (e) {
         ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
           code: ERROR_CODES.USER_NOT_FOUND.error_code,
           message: ERROR_CODES.USER_NOT_FOUND.message,
@@ -76,12 +80,11 @@ export class RecentCarsService {
         );
         const recentCarsVisitedByUser =
           await this.carService.getRecentCarsVisitedByUser(
-            recentCarsVisitedIds,
+            Array.from(new Set(recentCarsVisitedIds)),
           );
         return recentCarsVisitedByUser;
       } catch (ex) {
         console.log(ex);
-        transaction.rollback();
         ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST);
       }
     } catch (e) {

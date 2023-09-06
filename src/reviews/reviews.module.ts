@@ -14,6 +14,8 @@ import { CarPrice } from 'src/cars/entities/car-price.model';
 import { CarSteering } from 'src/cars/entities/car-steering.model';
 import { CarType } from 'src/cars/entities/car-type.model';
 import { QueueModule } from 'src/queue/queue.module';
+import { RecentCar } from 'src/recent_cars/entities/recent_car.model';
+import { RecentCarsModule } from 'src/recent_cars/recent_cars.module';
 
 @Module({
   controllers: [ReviewsController],
@@ -21,6 +23,7 @@ import { QueueModule } from 'src/queue/queue.module';
   imports: [
     SequelizeModule.forFeature([
       Review,
+      RecentCar,
       Car,
       CarStatus,
       CarPrice,
@@ -31,6 +34,7 @@ import { QueueModule } from 'src/queue/queue.module';
     CarsModule,
     UsersModule,
     QueueModule,
+    RecentCarsModule,
   ],
 })
 export class ReviewsModule {}

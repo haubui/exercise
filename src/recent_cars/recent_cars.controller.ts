@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { RecentCarsService } from './recent_cars.service';
 import { CreateRecentCarDto } from './dto/create-recent_car.dto';
@@ -20,9 +21,10 @@ export class RecentCarsController {
     return this.recentCarsService.create(createRecentCarDto);
   }
 
-  @Get(':user_id')
-  findAllRecentCar(@Param('user_id') user_id: string) {
-    return this.recentCarsService.findAllRecentCarByUser(user_id);
+  @Get()
+  findAllRecentCar(@Req() request: any) {
+    console.log(`request.user.user_id ${request.user.user_id}`);
+    return this.recentCarsService.findAllRecentCarByUser(request.user.user_id);
   }
 
   @Get(':id')

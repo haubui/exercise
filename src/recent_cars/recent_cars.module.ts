@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { RecentCarsService } from './recent_cars.service';
 import { RecentCarsController } from './recent_cars.controller';
 import { UsersService } from 'src/users/users.service';
@@ -28,9 +28,10 @@ import { QueueModule } from 'src/queue/queue.module';
       CarType,
       CarImages,
     ]),
-    CarsModule,
     UsersModule,
     QueueModule,
+    forwardRef(() => CarsModule),
   ],
+  exports: [RecentCarsService],
 })
 export class RecentCarsModule {}

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { CarsService } from './cars.service';
 import { CarsController } from './cars.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -10,10 +10,15 @@ import { CarType } from './entities/car-type.model';
 import { CarImages } from './entities/car-image.model';
 import { MulterModule } from '@nestjs/platform-express';
 import { CarsFileInterceptor } from './cars.intercepters';
+import { RecentCarsService } from 'src/recent_cars/recent_cars.service';
+import { RecentCarsModule } from 'src/recent_cars/recent_cars.module';
+import { RecentCar } from 'src/recent_cars/entities/recent_car.model';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([
+      RecentCar,
       Car,
       CarStatus,
       CarPrice,
@@ -22,8 +27,11 @@ import { CarsFileInterceptor } from './cars.intercepters';
       CarImages,
     ]),
     MulterModule.register(),
+    forwardRef(() => RecentCarsModule),
+    UsersModule,
   ],
   controllers: [CarsController],
-  providers: [CarsService, CarsFileInterceptor],
+  providers: [CarsService, CarsFileInterceptor, RecentCarsService],
+  exports: [CarsService],
 })
 export class CarsModule {}

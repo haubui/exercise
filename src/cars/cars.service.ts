@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 import { CarResponseDto } from './dto/car-response.dto';
@@ -17,6 +17,9 @@ import { ResponseUtils } from 'src/base/response.utils';
 import { ERROR_CODES } from 'src/base/error.code';
 import { sequelizeGloble } from 'src/database/sequalize.config';
 import * as fs from 'fs';
+import { ReviewsService } from 'src/reviews/reviews.service';
+import { RecentCarsService } from 'src/recent_cars/recent_cars.service';
+import { CreateRecentCarDto } from 'src/recent_cars/dto/create-recent_car.dto';
 
 @Injectable()
 export class CarsService {
@@ -25,17 +28,46 @@ export class CarsService {
     private carModel: typeof Car,
     @InjectModel(CarImages)
     private carImageModel: typeof CarImages,
+    @Inject(forwardRef(() => RecentCarsService))
+    private recentCarService: RecentCarsService,
   ) {}
 
   async getRecentCarsVisitedByUser(recentCarsVisitedIds: number[]) {
     try {
       return this.carModel.findAll({
-        where: {
-          id: { [Op.in]: recentCarsVisitedIds },
-        },
-        group: ['user_id'],
+        where: { id: recentCarsVisitedIds },
+        group: ['id'],
         limit: 10,
       });
+    } catch (err) {
+      console.log(err);
+      ResponseUtils.throwErrorException();
+    }
+  }
+
+  async findRecommendationCars(
+    car_id: string,
+  ): Promise<PagingResponse | PromiseLike<PagingResponse>> {
+    console.log(`car_id = ${car_id}`);
+    try {
+      const aCar = await this.carModel.findOne({
+        where: {
+          id: car_id,
+        },
+      });
+      if (aCar === null) {
+        ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+          code: ERROR_CODES.CAR_NOT_FOUND.error_code,
+          message: ERROR_CODES.CAR_NOT_FOUND.message,
+        });
+      }
+      const dto = new PagingCarDto();
+      dto.type_id = [aCar.car_type_id];
+      dto.capability = aCar.capability;
+      dto.price = aCar.current_price;
+      dto.capability = aCar.capability;
+      const recommendationCars = this.findAllAvailableCarForRent(dto);
+      return recommendationCars;
     } catch (err) {
       console.log(err);
       ResponseUtils.throwErrorException();
@@ -84,11 +116,11 @@ export class CarsService {
     carImage.save();
   }
 
-  findOne(id: number) {
+  async findOne(car_id: number) {
     try {
       const aCarFullInfo = this.carModel.findOne({
         where: {
-          id: id,
+          id: car_id,
         },
         include: [
           { model: CarType },
@@ -104,6 +136,37 @@ export class CarsService {
           message: ERROR_CODES.CAR_NOT_FOUND.message,
         });
       }
+      return aCarFullInfo;
+    } catch (err) {
+      console.log(err);
+      ResponseUtils.throwErrorException();
+    }
+  }
+
+  async findOneCarDetail(user_id: number, car_id: number) {
+    try {
+      const aCarFullInfo = this.carModel.findOne({
+        where: {
+          id: car_id,
+        },
+        include: [
+          { model: CarType },
+          { model: CarSteering },
+          { model: CarPrice },
+          { model: CarStatus },
+          { model: CarImages },
+        ],
+      });
+      if (aCarFullInfo === null) {
+        ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+          code: ERROR_CODES.CAR_NOT_FOUND.error_code,
+          message: ERROR_CODES.CAR_NOT_FOUND.message,
+        });
+      }
+      const recentCarDto = new CreateRecentCarDto();
+      recentCarDto.car_id = car_id;
+      recentCarDto.user_id = user_id;
+      this.recentCarService.create(recentCarDto);
       return aCarFullInfo;
     } catch (err) {
       console.log(err);

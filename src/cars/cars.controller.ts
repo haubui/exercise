@@ -11,6 +11,7 @@ import {
   Query,
   UseInterceptors,
   UploadedFile,
+  Req,
 } from '@nestjs/common';
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
@@ -55,8 +56,19 @@ export class CarsController {
   }
 
   @Get('detail')
-  findOneDetailCar(@Query() carDetail: CarDetailDto) {
-    return this.carsService.findOne(carDetail.car_id);
+  findOneDetailCar(@Req() request: any, @Query() carDetail: CarDetailDto) {
+    return this.carsService.findOneCarDetail(
+      request.user.user_id,
+      carDetail.car_id,
+    );
+  }
+
+  @Get('recommendationCars/:carId')
+  @Public()
+  async findRecommendationCars(
+    @Param('carId') carId: string,
+  ): Promise<PagingResponse> {
+    return await this.carsService.findRecommendationCars(carId);
   }
 
   @Patch(':id')

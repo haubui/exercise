@@ -1,14 +1,22 @@
-import { Column, DataType, Table } from 'sequelize-typescript';
+import { Column, DataType, ForeignKey, Table } from 'sequelize-typescript';
+import { Car } from 'src/cars/entities/car.model';
 import { BaseModel } from 'src/models/base.model';
+import { User } from 'src/models/user.model';
+import { OrderStatus } from 'src/order_status/entities/order_status.entity';
+import { PaymentMethod } from 'src/payment_method/entities/payment_method.entity';
 @Table({ tableName: 'orders' })
 export class Order extends BaseModel {
   @Column
+  @ForeignKey(() => User)
   user_id: number;
   @Column
+  @ForeignKey(() => Car)
   car_id: number;
   @Column
+  @ForeignKey(() => PaymentMethod)
   payment_method_id: number;
   @Column
+  @ForeignKey(() => OrderStatus)
   order_status_id: number;
   @Column
   pick_up_place: string;

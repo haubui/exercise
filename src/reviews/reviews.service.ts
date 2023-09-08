@@ -111,6 +111,7 @@ export class ReviewsService {
   }
 
   async remove(id: number) {
+    const transaction = await sequelizeGloble.transaction();
     try {
       const reviewWanttoDelete = await this.reviewModel.findOne({
         where: { id: id },
@@ -130,7 +131,6 @@ export class ReviewsService {
           message: ERROR_CODES.CAR_NOT_FOUND.message,
         });
       }
-      const transaction = await sequelizeGloble.transaction();
       await this.reviewModel.destroy({
         where: { id: id },
         transaction: transaction,
@@ -158,6 +158,7 @@ export class ReviewsService {
       });
     } catch (err) {
       console.log(err);
+      transaction.rollback();
       ResponseUtils.throwErrorException();
     }
   }

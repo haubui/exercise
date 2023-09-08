@@ -10,12 +10,14 @@ import {
 import { OrderStatusService } from './order_status.service';
 import { CreateOrderStatusDto } from './dto/create-order_status.dto';
 import { UpdateOrderStatusDto } from './dto/update-order_status.dto';
+import { Roles, Role } from 'src/guards/role.decorator';
 
 @Controller('order-status')
 export class OrderStatusController {
   constructor(private readonly orderStatusService: OrderStatusService) {}
 
   @Post()
+  @Roles(Role.Admin)
   create(@Body() createOrderStatusDto: CreateOrderStatusDto) {
     return this.orderStatusService.create(createOrderStatusDto);
   }
@@ -31,6 +33,7 @@ export class OrderStatusController {
   }
 
   @Patch(':id')
+  @Roles(Role.Admin)
   update(
     @Param('id') id: string,
     @Body() updateOrderStatusDto: UpdateOrderStatusDto,
@@ -39,6 +42,7 @@ export class OrderStatusController {
   }
 
   @Delete(':id')
+  @Roles(Role.Admin)
   remove(@Param('id') id: string) {
     return this.orderStatusService.remove(+id);
   }

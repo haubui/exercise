@@ -10,12 +10,14 @@ import {
 import { PaymentMethodService } from './payment_method.service';
 import { CreatePaymentMethodDto } from './dto/create-payment_method.dto';
 import { UpdatePaymentMethodDto } from './dto/update-payment_method.dto';
+import { Role, Roles } from 'src/guards/role.decorator';
 
 @Controller('payment-method')
 export class PaymentMethodController {
   constructor(private readonly paymentMethodService: PaymentMethodService) {}
 
   @Post()
+  @Roles(Role.Admin)
   create(@Body() createPaymentMethodDto: CreatePaymentMethodDto) {
     return this.paymentMethodService.create(createPaymentMethodDto);
   }
@@ -31,6 +33,7 @@ export class PaymentMethodController {
   }
 
   @Patch(':id')
+  @Roles(Role.Admin)
   update(
     @Param('id') id: string,
     @Body() updatePaymentMethodDto: UpdatePaymentMethodDto,
@@ -39,6 +42,7 @@ export class PaymentMethodController {
   }
 
   @Delete(':id')
+  @Roles(Role.Admin)
   remove(@Param('id') id: string) {
     return this.paymentMethodService.remove(+id);
   }

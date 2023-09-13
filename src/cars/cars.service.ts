@@ -8,8 +8,6 @@ import { InjectModel } from '@nestjs/sequelize';
 import { PagingCarDto } from './dto/paging-cars.dto';
 import { PagingResponse } from './dto/paging-cars-response.dto';
 import { CarType } from './entities/car-type.model';
-import { CarPrice } from './entities/car-price.model';
-import { CarStatus } from './entities/car-status.model';
 import { CarImages } from './entities/car-image.model';
 import { Op, Transaction } from 'sequelize';
 import { CarSteering } from './entities/car-steering.model';
@@ -20,6 +18,9 @@ import * as fs from 'fs';
 import { ReviewsService } from 'src/reviews/reviews.service';
 import { RecentCarsService } from 'src/recent_cars/recent_cars.service';
 import { CreateRecentCarDto } from 'src/recent_cars/dto/create-recent_car.dto';
+import { CreateOrderDto } from 'src/orders/dto/create-order.dto';
+import { CarPrice } from 'src/car_prices/entities/car_price.model';
+import { CarStatus } from 'src/car_statuses/entities/car_status.model';
 
 @Injectable()
 export class CarsService {
@@ -143,6 +144,27 @@ export class CarsService {
     }
   }
 
+  async findOneForUpdate(car_id: number) {
+    try {
+      const aCarFullInfo = this.carModel.findOne({
+        where: {
+          id: car_id,
+        },
+        lock: true,
+      });
+      if (aCarFullInfo === null) {
+        ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+          code: ERROR_CODES.CAR_NOT_FOUND.error_code,
+          message: ERROR_CODES.CAR_NOT_FOUND.message,
+        });
+      }
+      return aCarFullInfo;
+    } catch (err) {
+      console.log(err);
+      ResponseUtils.throwErrorException();
+    }
+  }
+
   async findOneCarDetail(user_id: number, car_id: number) {
     try {
       const aCarFullInfo = this.carModel.findOne({
@@ -249,6 +271,58 @@ export class CarsService {
     }
   }
 
+  async getAllCarRented(
+    pick_up_date?: Date,
+    drop_off_date?: Date,
+  ): Promise<Car[]> {
+    const currentDate = new Date();
+    const pickUpDate = pick_up_date;
+    const dropOffDate = drop_off_date;
+    const carRented = await this.carModel.findAll({
+      include: [
+        {
+          model: CarStatus,
+          where: {
+            [Op.and]: [
+              {
+                status: {
+                  [Op.in]: ['PENDING', 'HIRRING', 'NOT_RETURNED', 'FIXING'],
+                },
+              },
+              pickUpDate
+                ? {
+                    [Op.and]: [
+                      {
+                        start_time: { [Op.gte]: currentDate },
+                        end_time: { [Op.gte]: currentDate },
+                      },
+                      {
+                        start_time: { [Op.lt]: pickUpDate },
+                      },
+                      { end_time: { [Op.gt]: pickUpDate } },
+                    ],
+                  }
+                : {},
+              dropOffDate
+                ? {
+                    [Op.and]: [
+                      {
+                        start_time: { [Op.gte]: currentDate },
+                        end_time: { [Op.gte]: currentDate },
+                      },
+                      { start_time: { [Op.lt]: dropOffDate } },
+                      { end_time: { [Op.gt]: dropOffDate } },
+                    ],
+                  }
+                : {},
+            ],
+          },
+        },
+      ],
+    });
+    return carRented;
+  }
+
   async findAllAvailableCarForRent(
     pagingCarDto: PagingCarDto,
   ): Promise<PagingResponse> {
@@ -257,48 +331,7 @@ export class CarsService {
       const currentDate = new Date();
       const pickUpDate = pagingCarDto.pick_up_date;
       const dropOffDate = pagingCarDto.drop_off_date;
-      const carRented = await this.carModel.findAll({
-        include: [
-          {
-            model: CarStatus,
-            where: {
-              [Op.and]: [
-                {
-                  status: {
-                    [Op.in]: ['PENDING', 'HIRRING', 'NOT_RETURNED', 'FIXING'],
-                  },
-                },
-                pickUpDate
-                  ? {
-                      [Op.and]: [
-                        {
-                          start_time: { [Op.gte]: currentDate },
-                          end_time: { [Op.gte]: currentDate },
-                        },
-                        {
-                          start_time: { [Op.lt]: pickUpDate },
-                        },
-                        { end_time: { [Op.gt]: pickUpDate } },
-                      ],
-                    }
-                  : {},
-                dropOffDate
-                  ? {
-                      [Op.and]: [
-                        {
-                          start_time: { [Op.gte]: currentDate },
-                          end_time: { [Op.gte]: currentDate },
-                        },
-                        { start_time: { [Op.lt]: dropOffDate } },
-                        { end_time: { [Op.gt]: dropOffDate } },
-                      ],
-                    }
-                  : {},
-              ],
-            },
-          },
-        ],
-      });
+      const carRented = await this.getAllCarRented(pickUpDate, dropOffDate);
       const carsRentedIds = carRented.map((car) => car.id);
       const allCarsFound = await this.carModel.findAndCountAll({
         where: {
@@ -388,12 +421,7 @@ export class CarsService {
                   [Op.and]: [
                     {
                       status: {
-                        [Op.in]: [
-                          'PENDING',
-                          'HIRRING',
-                          'NOT_RETURNED',
-                          'FIXING',
-                        ],
+                        [Op.in]: ['PENDING', 'HIRRING', 'FIXING'],
                       },
                     },
                     pickUpDate
@@ -443,6 +471,143 @@ export class CarsService {
         +pagingCarDto.offset,
         +pagingCarDto.limit,
       );
+    } catch (ex) {
+      console.log(ex);
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST);
+    }
+  }
+  async findAllAvailableCarForOrder(
+    createOrderDto: CreateOrderDto,
+    orderCar: Car,
+  ): Promise<Car> {
+    try {
+      console.log(createOrderDto);
+      const currentDate = new Date();
+      const pickUpDate = createOrderDto.pick_up_date;
+      const dropOffDate = createOrderDto.drop_off_date;
+      const carRented = await this.getAllCarRented(pickUpDate, dropOffDate);
+      const carsRentedIds = carRented.map((car) => car.id);
+      const carCanOrdered = await this.carModel.findOne({
+        where: {
+          id: orderCar.id,
+        },
+        include: [
+          {
+            model: CarType,
+            where: orderCar.car_type_id
+              ? {
+                  id: orderCar.car_type_id,
+                }
+              : {},
+          },
+          {
+            model: CarSteering,
+            where: orderCar.car_steering_id
+              ? {
+                  id: orderCar.car_steering_id,
+                }
+              : {},
+          },
+          {
+            model: CarPrice,
+            where: orderCar.current_price
+              ? {
+                  price_rent_per_day: {
+                    [Op.lte]: orderCar.current_price,
+                  },
+                }
+              : {},
+            order: [['createdAt', 'DESC']],
+          },
+          {
+            model: CarStatus,
+            where: {
+              [Op.or]: [
+                {
+                  [Op.and]: [
+                    { status: 'AVAILABLE' },
+                    createOrderDto.pick_up_date
+                      ? {
+                          [Op.and]: [
+                            {
+                              start_time: {
+                                [Op.lte]: createOrderDto.pick_up_date,
+                              },
+                            },
+                            { start_time: { [Op.lt]: currentDate } },
+                          ],
+                        }
+                      : {},
+                    createOrderDto.drop_off_date
+                      ? {
+                          [Op.or]: [
+                            { end_time: null },
+                            {
+                              end_time: {
+                                [Op.lt]: createOrderDto.drop_off_date,
+                              },
+                            },
+                          ],
+                        }
+                      : {},
+                    {
+                      car_id: { [Op.notIn]: carsRentedIds },
+                    },
+                    {
+                      pick_up_place: createOrderDto.pick_up_place,
+                    },
+                  ],
+                },
+                {
+                  [Op.and]: [
+                    {
+                      status: {
+                        [Op.in]: ['PENDING', 'HIRRING', 'FIXING'],
+                      },
+                    },
+                    pickUpDate
+                      ? {
+                          [Op.and]: [
+                            {
+                              start_time: { [Op.gte]: currentDate },
+                              end_time: { [Op.gte]: currentDate },
+                            },
+                            {
+                              start_time: { [Op.lt]: pickUpDate },
+                            },
+                            { end_time: { [Op.lt]: pickUpDate } },
+                          ],
+                        }
+                      : {},
+                    dropOffDate
+                      ? {
+                          [Op.and]: [
+                            {
+                              start_time: { [Op.gte]: currentDate },
+                              end_time: { [Op.gte]: currentDate },
+                            },
+                            { start_time: { [Op.gt]: dropOffDate } },
+                            { end_time: { [Op.gt]: dropOffDate } },
+                          ],
+                        }
+                      : {},
+                    {
+                      drop_off_place: createOrderDto.pick_up_place,
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            model: CarImages,
+            where: {},
+            order: [['order', 'ASC']],
+          },
+        ],
+        lock: true,
+      });
+      return carCanOrdered;
     } catch (ex) {
       console.log(ex);
       ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST);

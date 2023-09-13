@@ -8,14 +8,14 @@ import { Car } from 'src/cars/entities/car.model';
 import { CarsModule } from 'src/cars/cars.module';
 import { UsersModule } from 'src/users/users.module';
 import { Review } from './entities/review.model';
-import { CarStatus } from 'src/cars/entities/car-status.model';
 import { CarImages } from 'src/cars/entities/car-image.model';
-import { CarPrice } from 'src/cars/entities/car-price.model';
 import { CarSteering } from 'src/cars/entities/car-steering.model';
 import { CarType } from 'src/cars/entities/car-type.model';
 import { QueueModule } from 'src/queue/queue.module';
 import { RecentCar } from 'src/recent_cars/entities/recent_car.model';
 import { RecentCarsModule } from 'src/recent_cars/recent_cars.module';
+import { CarPrice } from 'src/car_prices/entities/car_price.model';
+import { CarStatus } from 'src/car_statuses/entities/car_status.model';
 
 @Module({
   controllers: [ReviewsController],

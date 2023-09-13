@@ -1,10 +1,10 @@
 import { Exclude, Expose } from 'class-transformer';
 import { Car } from '../entities/car.model';
-import { CarPrice } from '../entities/car-price.model';
 import { CarImages } from '../entities/car-image.model';
 import { CarType } from '../entities/car-type.model';
 import { CarSteering } from '../entities/car-steering.model';
-import { CarStatus } from '../entities/car-status.model';
+import { CarPrice } from 'src/car_prices/entities/car_price.model';
+import { CarStatus } from 'src/car_statuses/entities/car_status.model';
 
 export class CarResponseDto {
   @Exclude()

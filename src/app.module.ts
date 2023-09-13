@@ -29,6 +29,8 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { RecentCarsModule } from './recent_cars/recent_cars.module';
 import { PaymentMethodModule } from './payment_method/payment_method.module';
 import { OrderStatusModule } from './order_status/order_status.module';
+import { CarStatusesModule } from './car_statuses/car_statuses.module';
+import { CarPricesModule } from './car_prices/car_prices.module';
 const logger = new Logger('SystemLog');
 
 @Module({
@@ -71,6 +73,8 @@ const logger = new Logger('SystemLog');
     RecentCarsModule,
     PaymentMethodModule,
     OrderStatusModule,
+    CarStatusesModule,
+    CarPricesModule,
   ],
   controllers: [AppController],
   providers: [

@@ -8,10 +8,10 @@ import {
 } from 'sequelize-typescript';
 import { BaseModel } from 'src/models/base.model';
 import { CarType } from './car-type.model';
-import { CarPrice } from './car-price.model';
-import { CarStatus } from './car-status.model';
 import { CarImages } from './car-image.model';
 import { CarSteering } from './car-steering.model';
+import { CarPrice } from 'src/car_prices/entities/car_price.model';
+import { CarStatus } from 'src/car_statuses/entities/car_status.model';
 @Table({ tableName: 'cars' })
 export class Car extends BaseModel {
   @Column

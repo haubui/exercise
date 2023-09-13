@@ -22,6 +22,7 @@ export class CreateOrderDto {
   @IsNotEmpty()
   pick_up_place: string;
 
+  @Type(() => Date)
   @IsDate()
   pick_up_date: Date;
 
@@ -29,6 +30,7 @@ export class CreateOrderDto {
   @IsNotEmpty()
   drop_off_place: string;
 
+  @Type(() => Date)
   @IsDate()
   drop_off_date: Date;
 

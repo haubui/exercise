@@ -24,6 +24,11 @@ export const ERROR_CODES = {
     title: 'Error',
     message: 'Car is not found',
   },
+  CAR_NOT_AVAILABLE: {
+    error_code: 404005,
+    title: 'Error',
+    message: 'Car is not available',
+  },
   ACTION_FORBIDEN: {
     error_code: 403000,
     title: 'Error',

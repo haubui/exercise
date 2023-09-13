@@ -6,14 +6,14 @@ import { CarsService } from 'src/cars/cars.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { RecentCar } from './entities/recent_car.model';
 import { Car } from 'src/cars/entities/car.model';
-import { CarStatus } from 'src/cars/entities/car-status.model';
 import { CarsModule } from 'src/cars/cars.module';
 import { CarImages } from 'src/cars/entities/car-image.model';
-import { CarPrice } from 'src/cars/entities/car-price.model';
 import { CarSteering } from 'src/cars/entities/car-steering.model';
 import { CarType } from 'src/cars/entities/car-type.model';
 import { UsersModule } from 'src/users/users.module';
 import { QueueModule } from 'src/queue/queue.module';
+import { CarStatus } from 'src/car_statuses/entities/car_status.model';
+import { CarPrice } from 'src/car_prices/entities/car_price.model';
 
 @Module({
   controllers: [RecentCarsController],

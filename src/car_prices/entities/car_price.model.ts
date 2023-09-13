@@ -1,6 +1,7 @@
 import { BelongsTo, Column, ForeignKey, Table } from 'sequelize-typescript';
+import { Car } from 'src/cars/entities/car.model';
 import { BaseModel } from 'src/models/base.model';
-import { Car } from './car.model';
+
 @Table({ tableName: 'car_prices' })
 export class CarPrice extends BaseModel {
   @Column

@@ -12,6 +12,7 @@ import { sequelizeGloble } from 'src/database/sequalize.config';
 import { CarStatus } from 'src/car_statuses/entities/car_status.model';
 import { CarStatusesService } from 'src/car_statuses/car_statuses.service';
 import { CreateCarStatusDto } from 'src/car_statuses/dto/create-car_status.dto';
+import { CitiesService } from 'src/cities/cities.service';
 
 @Injectable()
 export class OrdersService {
@@ -21,6 +22,7 @@ export class OrdersService {
     private readonly carStatusesService: CarStatusesService,
     private readonly usersService: UsersService,
     private readonly carService: CarsService,
+    private readonly citiesService: CitiesService,
   ) {}
   async create(createOrderDto: CreateOrderDto) {
     const transaction = await sequelizeGloble.transaction();
@@ -45,12 +47,15 @@ export class OrdersService {
         createOrderDto,
         carOrder,
       );
-      if (!carOrder) {
+      if (!carCanOrder) {
+        const city = await this.citiesService.findOneByCityCode(
+          createOrderDto.pick_up_place,
+        );
         ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
           code: ERROR_CODES.CAR_NOT_AVAILABLE.error_code,
           message:
             ERROR_CODES.CAR_NOT_AVAILABLE.message +
-            ` from ${createOrderDto.pick_up_date}  to ${createOrderDto.drop_off_date}`,
+            ` from ${createOrderDto.pick_up_date} to ${createOrderDto.drop_off_date} at ${city.city_name}`,
         });
       }
       const orderNew = plainToInstance(Order, createOrderDto);
@@ -67,9 +72,11 @@ export class OrdersService {
       await transaction.commit();
       return carCanOrder;
     } catch (err) {
-      console.log(err);
+      console.log('this is error', err);
       transaction.rollback();
-      ResponseUtils.throwErrorException();
+      if (err.response.code === ERROR_CODES.CAR_NOT_AVAILABLE.error_code) {
+        ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, err);
+      } else ResponseUtils.throwErrorException();
     }
   }
 

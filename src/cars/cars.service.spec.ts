@@ -7,8 +7,6 @@ import { CarsFileInterceptor } from './cars.intercepters';
 import { MulterModule } from '@nestjs/platform-express';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { CarImages } from './entities/car-image.model';
-import { CarPrice } from './entities/car-price.model';
-import { CarStatus } from './entities/car-status.model';
 import { CarSteering } from './entities/car-steering.model';
 import { CarType } from './entities/car-type.model';
 import { Car } from './entities/car.model';

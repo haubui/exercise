@@ -29,6 +29,8 @@ export class CarsService {
     private carModel: typeof Car,
     @InjectModel(CarImages)
     private carImageModel: typeof CarImages,
+    @InjectModel(CarStatus)
+    private carStatusModel: typeof CarStatus,
     @Inject(forwardRef(() => RecentCarsService))
     private recentCarService: RecentCarsService,
   ) {}
@@ -271,7 +273,7 @@ export class CarsService {
     }
   }
 
-  async getAllCarRented(
+  async getAllCarNotAvailable(
     pick_up_date?: Date,
     drop_off_date?: Date,
   ): Promise<Car[]> {
@@ -286,7 +288,7 @@ export class CarsService {
             [Op.and]: [
               {
                 status: {
-                  [Op.in]: ['PENDING', 'HIRRING', 'NOT_RETURNED', 'FIXING'],
+                  [Op.in]: ['PENDING', 'HIRING', 'NOT_RETURNED', 'FIXING'],
                 },
               },
               pickUpDate
@@ -331,7 +333,10 @@ export class CarsService {
       const currentDate = new Date();
       const pickUpDate = pagingCarDto.pick_up_date;
       const dropOffDate = pagingCarDto.drop_off_date;
-      const carRented = await this.getAllCarRented(pickUpDate, dropOffDate);
+      const carRented = await this.getAllCarNotAvailable(
+        pickUpDate,
+        dropOffDate,
+      );
       const carsRentedIds = carRented.map((car) => car.id);
       const allCarsFound = await this.carModel.findAndCountAll({
         where: {
@@ -421,7 +426,7 @@ export class CarsService {
                   [Op.and]: [
                     {
                       status: {
-                        [Op.in]: ['PENDING', 'HIRRING', 'FIXING'],
+                        [Op.in]: ['PENDING', 'HIRING', 'FIXING'],
                       },
                     },
                     pickUpDate
@@ -465,9 +470,10 @@ export class CarsService {
         limit: pagingCarDto.limit ? +pagingCarDto.limit : 1000,
         offset: pagingCarDto.offset ? +pagingCarDto.offset : 0,
       });
+      console.log(allCarsFound);
       return new PagingResponse(
         allCarsFound.rows,
-        +allCarsFound.count.length,
+        +allCarsFound.rows.length,
         +pagingCarDto.offset,
         +pagingCarDto.limit,
       );
@@ -485,8 +491,83 @@ export class CarsService {
       const currentDate = new Date();
       const pickUpDate = createOrderDto.pick_up_date;
       const dropOffDate = createOrderDto.drop_off_date;
-      const carRented = await this.getAllCarRented(pickUpDate, dropOffDate);
+      const carRented = await this.getAllCarNotAvailable(
+        pickUpDate,
+        dropOffDate,
+      );
       const carsRentedIds = carRented.map((car) => car.id);
+      console.log('carsRentedIds', carsRentedIds);
+      const carWasRentedBeforeSomeHowRows =
+        await this.carStatusModel.findAndCountAll({
+          where: {
+            status: {
+              [Op.in]: ['PENDING', 'HIRING', 'NOT_RETURNED', 'FIXING'],
+            },
+          },
+        });
+      const carIdsWasRentedBeforeSomeHow = Array.from(
+        new Set(
+          carWasRentedBeforeSomeHowRows.rows.map(
+            (carStatus) => carStatus.car_id,
+          ),
+        ),
+      );
+      console.log('carIdsWasRentedBeforeSomeHow', carIdsWasRentedBeforeSomeHow);
+      const carStatusNotAvailableToOrderRows =
+        await this.carStatusModel.findAndCountAll({
+          where: {
+            [Op.and]: [
+              {
+                status: {
+                  [Op.in]: ['PENDING', 'HIRING', 'NOT_RETURNED', 'FIXING'],
+                },
+              },
+              {
+                [Op.or]: [
+                  {
+                    [Op.and]: [
+                      {
+                        start_time: {
+                          [Op.gt]: createOrderDto.pick_up_date,
+                        },
+                      },
+                      {
+                        end_time: {
+                          [Op.lt]: createOrderDto.drop_off_date,
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    [Op.and]: [
+                      {
+                        start_time: {
+                          [Op.lt]: createOrderDto.pick_up_date,
+                        },
+                      },
+                      {
+                        end_time: {
+                          [Op.gt]: createOrderDto.drop_off_date,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        });
+      const carStatusNotAvailableToOrderIds = Array.from(
+        new Set(
+          carStatusNotAvailableToOrderRows.rows.map(
+            (carStatus) => carStatus.car_id,
+          ),
+        ),
+      );
+      console.log(
+        'carStatusNotAvailableToOrderIds',
+        carStatusNotAvailableToOrderIds,
+      );
       const carCanOrdered = await this.carModel.findOne({
         where: {
           id: orderCar.id,
@@ -554,19 +635,39 @@ export class CarsService {
                       car_id: { [Op.notIn]: carsRentedIds },
                     },
                     {
-                      pick_up_place: createOrderDto.pick_up_place,
+                      [Op.or]: [
+                        {
+                          [Op.and]: [
+                            { pick_up_place: null },
+                            {
+                              car_id: {
+                                [Op.notIn]: carIdsWasRentedBeforeSomeHow,
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          pick_up_place: createOrderDto.pick_up_place,
+                        },
+                      ],
                     },
                   ],
                 },
                 {
-                  [Op.and]: [
+                  [Op.or]: [
                     {
-                      status: {
-                        [Op.in]: ['PENDING', 'HIRRING', 'FIXING'],
-                      },
-                    },
-                    pickUpDate
-                      ? {
+                      [Op.and]: [
+                        {
+                          status: {
+                            [Op.in]: [
+                              'PENDING',
+                              'HIRING',
+                              'NOT_RETURNED',
+                              'FIXING',
+                            ],
+                          },
+                        },
+                        {
                           [Op.and]: [
                             {
                               start_time: { [Op.gte]: currentDate },
@@ -576,23 +677,77 @@ export class CarsService {
                               start_time: { [Op.lt]: pickUpDate },
                             },
                             { end_time: { [Op.lt]: pickUpDate } },
+                            { start_time: { [Op.lt]: dropOffDate } },
+                            { end_time: { [Op.lt]: dropOffDate } },
                           ],
-                        }
-                      : {},
-                    dropOffDate
-                      ? {
+                        },
+                        {
+                          car_id: {
+                            [Op.notIn]: carStatusNotAvailableToOrderIds,
+                          },
+                        },
+                        // {
+                        //   [Op.and]: [
+                        //     {
+                        //       start_time: { [Op.gte]: currentDate },
+                        //       end_time: { [Op.gte]: currentDate },
+                        //     },
+                        // { start_time: { [Op.gt]: dropOffDate } },
+                        // { end_time: { [Op.gt]: dropOffDate } },
+                        //   ],
+                        // },
+                        {
+                          drop_off_place: createOrderDto.pick_up_place,
+                        },
+                      ],
+                    },
+                    {
+                      [Op.and]: [
+                        {
+                          status: {
+                            [Op.in]: [
+                              'PENDING',
+                              'HIRING',
+                              'NOT_RETURNED',
+                              'FIXING',
+                            ],
+                          },
+                        },
+                        // {
+                        //   [Op.and]: [
+                        //     {
+                        //       start_time: { [Op.gte]: currentDate },
+                        //       end_time: { [Op.gte]: currentDate },
+                        //     },
+                        //     {
+                        //       start_time: { [Op.lt]: pickUpDate },
+                        //     },
+                        //     { end_time: { [Op.lt]: pickUpDate } },
+                        //   ],
+                        // },
+                        {
                           [Op.and]: [
                             {
                               start_time: { [Op.gte]: currentDate },
                               end_time: { [Op.gte]: currentDate },
                             },
+                            {
+                              start_time: { [Op.gt]: pickUpDate },
+                            },
+                            { end_time: { [Op.gt]: pickUpDate } },
                             { start_time: { [Op.gt]: dropOffDate } },
                             { end_time: { [Op.gt]: dropOffDate } },
                           ],
-                        }
-                      : {},
-                    {
-                      drop_off_place: createOrderDto.pick_up_place,
+                        },
+                        {
+                          car_id: {
+                            [Op.notIn]: carStatusNotAvailableToOrderIds,
+                          },
+                        },
+                        {
+                          drop_off_place: createOrderDto.pick_up_place,
+                        },
+                      ],
                     },
                   ],
                 },
@@ -608,6 +763,7 @@ export class CarsService {
         lock: true,
       });
       return carCanOrdered;
+      return null;
     } catch (ex) {
       console.log(ex);
       ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST);

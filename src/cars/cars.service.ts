@@ -528,12 +528,12 @@ export class CarsService {
                     [Op.and]: [
                       {
                         start_time: {
-                          [Op.gt]: createOrderDto.pick_up_date,
+                          [Op.lte]: createOrderDto.pick_up_date,
                         },
                       },
                       {
                         end_time: {
-                          [Op.lt]: createOrderDto.drop_off_date,
+                          [Op.gte]: createOrderDto.pick_up_date,
                         },
                       },
                     ],
@@ -542,12 +542,54 @@ export class CarsService {
                     [Op.and]: [
                       {
                         start_time: {
-                          [Op.lt]: createOrderDto.pick_up_date,
+                          [Op.lte]: createOrderDto.drop_off_date,
                         },
                       },
                       {
                         end_time: {
-                          [Op.gt]: createOrderDto.drop_off_date,
+                          [Op.gte]: createOrderDto.drop_off_date,
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    [Op.and]: [
+                      {
+                        start_time: {
+                          [Op.gte]: createOrderDto.pick_up_date,
+                        },
+                      },
+                      {
+                        start_time: {
+                          [Op.lte]: createOrderDto.drop_off_date,
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    [Op.and]: [
+                      {
+                        end_time: {
+                          [Op.lte]: createOrderDto.drop_off_date,
+                        },
+                      },
+                      {
+                        end_time: {
+                          [Op.gte]: createOrderDto.pick_up_date,
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    [Op.and]: [
+                      {
+                        start_time: {
+                          [Op.gte]: createOrderDto.pick_up_date,
+                        },
+                      },
+                      {
+                        end_time: {
+                          [Op.lte]: createOrderDto.drop_off_date,
                         },
                       },
                     ],
@@ -686,16 +728,6 @@ export class CarsService {
                             [Op.notIn]: carStatusNotAvailableToOrderIds,
                           },
                         },
-                        // {
-                        //   [Op.and]: [
-                        //     {
-                        //       start_time: { [Op.gte]: currentDate },
-                        //       end_time: { [Op.gte]: currentDate },
-                        //     },
-                        // { start_time: { [Op.gt]: dropOffDate } },
-                        // { end_time: { [Op.gt]: dropOffDate } },
-                        //   ],
-                        // },
                         {
                           drop_off_place: createOrderDto.pick_up_place,
                         },
@@ -713,18 +745,6 @@ export class CarsService {
                             ],
                           },
                         },
-                        // {
-                        //   [Op.and]: [
-                        //     {
-                        //       start_time: { [Op.gte]: currentDate },
-                        //       end_time: { [Op.gte]: currentDate },
-                        //     },
-                        //     {
-                        //       start_time: { [Op.lt]: pickUpDate },
-                        //     },
-                        //     { end_time: { [Op.lt]: pickUpDate } },
-                        //   ],
-                        // },
                         {
                           [Op.and]: [
                             {

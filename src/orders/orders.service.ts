@@ -24,7 +24,7 @@ export class OrdersService {
     private readonly carService: CarsService,
     private readonly citiesService: CitiesService,
   ) {}
-  async create(createOrderDto: CreateOrderDto) {
+  async create(createOrderDto: CreateOrderDto, optimize = false) {
     const transaction = await sequelizeGloble.transaction();
     try {
       const userOrdered = await this.usersService.findOneById(
@@ -43,10 +43,16 @@ export class OrdersService {
           message: ERROR_CODES.CAR_NOT_FOUND.message,
         });
       }
-      const carCanOrder = await this.carService.findAllAvailableCarForOrder(
-        createOrderDto,
-        carOrder,
-      );
+      const carCanOrder = !optimize
+        ? await this.carService.findAllAvailableCarForOrder(
+            createOrderDto,
+            carOrder,
+          )
+        : await this.carService.findAllAvailableCarForOrder(
+            createOrderDto,
+            carOrder,
+            optimize,
+          );
       if (!carCanOrder) {
         const city = await this.citiesService.findOneByCityCode(
           createOrderDto.pick_up_place,
@@ -62,7 +68,7 @@ export class OrdersService {
       await orderNew.save({ transaction });
       const carStatusDto = new CreateCarStatusDto();
       carStatusDto.status = 'PENDING';
-      carStatusDto.car_id = createOrderDto.car_id;
+      carStatusDto.car_id = carCanOrder.id;
       carStatusDto.start_time = createOrderDto.pick_up_date;
       carStatusDto.end_time = createOrderDto.drop_off_date;
       carStatusDto.pick_up_place = createOrderDto.pick_up_place;

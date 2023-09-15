@@ -16,8 +16,13 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post('makeOrder')
-  create(@Body() createOrderDto: CreateOrderDto) {
+  makeOrderByCarId(@Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.create(createOrderDto);
+  }
+
+  @Post('makeOrderByCar')
+  makeOrderBaseOnCarInfo(@Body() createOrderDto: CreateOrderDto) {
+    return this.ordersService.create(createOrderDto, true);
   }
 
   @Get()

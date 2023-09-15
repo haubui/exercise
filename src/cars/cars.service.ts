@@ -277,51 +277,127 @@ export class CarsService {
     pick_up_date?: Date,
     drop_off_date?: Date,
   ): Promise<Car[]> {
-    const currentDate = new Date();
     const pickUpDate = pick_up_date;
     const dropOffDate = drop_off_date;
-    const carRented = await this.carModel.findAll({
-      include: [
-        {
-          model: CarStatus,
-          where: {
-            [Op.and]: [
+
+    const carRented =
+      pickUpDate !== null && dropOffDate !== null
+        ? await this.carModel.findAll({
+            include: [
               {
-                status: {
-                  [Op.in]: ['PENDING', 'HIRING', 'NOT_RETURNED', 'FIXING'],
+                model: CarStatus,
+                where: {
+                  [Op.and]: [
+                    {
+                      status: {
+                        [Op.in]: [
+                          'PENDING',
+                          'HIRING',
+                          'NOT_RETURNED',
+                          'FIXING',
+                        ],
+                      },
+                    },
+                    {
+                      [Op.or]: [
+                        {
+                          [Op.and]: [
+                            {
+                              start_time: {
+                                [Op.lte]: pick_up_date,
+                              },
+                            },
+                            {
+                              end_time: {
+                                [Op.gte]: pick_up_date,
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          [Op.and]: [
+                            {
+                              start_time: {
+                                [Op.lte]: drop_off_date,
+                              },
+                            },
+                            {
+                              end_time: {
+                                [Op.gte]: drop_off_date,
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          [Op.and]: [
+                            {
+                              start_time: {
+                                [Op.gte]: pick_up_date,
+                              },
+                            },
+                            {
+                              start_time: {
+                                [Op.lte]: drop_off_date,
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          [Op.and]: [
+                            {
+                              end_time: {
+                                [Op.lte]: drop_off_date,
+                              },
+                            },
+                            {
+                              end_time: {
+                                [Op.gte]: pick_up_date,
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          [Op.and]: [
+                            {
+                              start_time: {
+                                [Op.gte]: pick_up_date,
+                              },
+                            },
+                            {
+                              end_time: {
+                                [Op.lte]: drop_off_date,
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
               },
-              pickUpDate
-                ? {
-                    [Op.and]: [
-                      {
-                        start_time: { [Op.gte]: currentDate },
-                        end_time: { [Op.gte]: currentDate },
-                      },
-                      {
-                        start_time: { [Op.lt]: pickUpDate },
-                      },
-                      { end_time: { [Op.gt]: pickUpDate } },
-                    ],
-                  }
-                : {},
-              dropOffDate
-                ? {
-                    [Op.and]: [
-                      {
-                        start_time: { [Op.gte]: currentDate },
-                        end_time: { [Op.gte]: currentDate },
-                      },
-                      { start_time: { [Op.lt]: dropOffDate } },
-                      { end_time: { [Op.gt]: dropOffDate } },
-                    ],
-                  }
-                : {},
             ],
-          },
-        },
-      ],
-    });
+          })
+        : await this.carModel.findAll({
+            include: [
+              {
+                model: CarStatus,
+                where: {
+                  [Op.and]: [
+                    {
+                      status: {
+                        [Op.in]: [
+                          'PENDING',
+                          'HIRING',
+                          'NOT_RETURNED',
+                          'FIXING',
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          });
     return carRented;
   }
 
@@ -333,11 +409,28 @@ export class CarsService {
       const currentDate = new Date();
       const pickUpDate = pagingCarDto.pick_up_date;
       const dropOffDate = pagingCarDto.drop_off_date;
+      if (
+        typeof pickUpDate !== 'undefined' &&
+        pickUpDate.getTime() < currentDate.getTime()
+      ) {
+        ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, {
+          message: 'Invalid pick up date',
+        });
+      }
+      if (
+        typeof dropOffDate !== 'undefined' &&
+        dropOffDate.getTime() < currentDate.getTime()
+      ) {
+        ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, {
+          message: 'Invalid drop off date',
+        });
+      }
       const carRented = await this.getAllCarNotAvailable(
         pickUpDate,
         dropOffDate,
       );
       const carsRentedIds = carRented.map((car) => car.id);
+      console.log(`carsRentedIds ${carsRentedIds}`);
       const allCarsFound = await this.carModel.findAndCountAll({
         where: {
           [Op.and]: [
@@ -485,6 +578,7 @@ export class CarsService {
   async findAllAvailableCarForOrder(
     createOrderDto: CreateOrderDto,
     orderCar: Car,
+    optimize = false,
   ): Promise<Car> {
     try {
       console.log(createOrderDto);
@@ -610,180 +704,356 @@ export class CarsService {
         'carStatusNotAvailableToOrderIds',
         carStatusNotAvailableToOrderIds,
       );
-      const carCanOrdered = await this.carModel.findOne({
-        where: {
-          id: orderCar.id,
-        },
-        include: [
-          {
-            model: CarType,
-            where: orderCar.car_type_id
-              ? {
-                  id: orderCar.car_type_id,
-                }
-              : {},
+      if (!optimize) {
+        const carCanOrdered = await this.carModel.findOne({
+          where: {
+            id: orderCar.id,
           },
-          {
-            model: CarSteering,
-            where: orderCar.car_steering_id
-              ? {
-                  id: orderCar.car_steering_id,
-                }
-              : {},
-          },
-          {
-            model: CarPrice,
-            where: orderCar.current_price
-              ? {
-                  price_rent_per_day: {
-                    [Op.lte]: orderCar.current_price,
-                  },
-                }
-              : {},
-            order: [['createdAt', 'DESC']],
-          },
-          {
-            model: CarStatus,
-            where: {
-              [Op.or]: [
-                {
-                  [Op.and]: [
-                    { status: 'AVAILABLE' },
-                    createOrderDto.pick_up_date
-                      ? {
-                          [Op.and]: [
-                            {
-                              start_time: {
-                                [Op.lte]: createOrderDto.pick_up_date,
-                              },
-                            },
-                            { start_time: { [Op.lt]: currentDate } },
-                          ],
-                        }
-                      : {},
-                    createOrderDto.drop_off_date
-                      ? {
-                          [Op.or]: [
-                            { end_time: null },
-                            {
-                              end_time: {
-                                [Op.lt]: createOrderDto.drop_off_date,
-                              },
-                            },
-                          ],
-                        }
-                      : {},
-                    {
-                      car_id: { [Op.notIn]: carsRentedIds },
-                    },
-                    {
-                      [Op.or]: [
-                        {
-                          [Op.and]: [
-                            { pick_up_place: null },
-                            {
-                              car_id: {
-                                [Op.notIn]: carIdsWasRentedBeforeSomeHow,
-                              },
-                            },
-                          ],
-                        },
-                        {
-                          pick_up_place: createOrderDto.pick_up_place,
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  [Op.or]: [
-                    {
-                      [Op.and]: [
-                        {
-                          status: {
-                            [Op.in]: [
-                              'PENDING',
-                              'HIRING',
-                              'NOT_RETURNED',
-                              'FIXING',
-                            ],
-                          },
-                        },
-                        {
-                          [Op.and]: [
-                            {
-                              start_time: { [Op.gte]: currentDate },
-                              end_time: { [Op.gte]: currentDate },
-                            },
-                            {
-                              start_time: { [Op.lt]: pickUpDate },
-                            },
-                            { end_time: { [Op.lt]: pickUpDate } },
-                            { start_time: { [Op.lt]: dropOffDate } },
-                            { end_time: { [Op.lt]: dropOffDate } },
-                          ],
-                        },
-                        {
-                          car_id: {
-                            [Op.notIn]: carStatusNotAvailableToOrderIds,
-                          },
-                        },
-                        {
-                          drop_off_place: createOrderDto.pick_up_place,
-                        },
-                      ],
-                    },
-                    {
-                      [Op.and]: [
-                        {
-                          status: {
-                            [Op.in]: [
-                              'PENDING',
-                              'HIRING',
-                              'NOT_RETURNED',
-                              'FIXING',
-                            ],
-                          },
-                        },
-                        {
-                          [Op.and]: [
-                            {
-                              start_time: { [Op.gte]: currentDate },
-                              end_time: { [Op.gte]: currentDate },
-                            },
-                            {
-                              start_time: { [Op.gt]: pickUpDate },
-                            },
-                            { end_time: { [Op.gt]: pickUpDate } },
-                            { start_time: { [Op.gt]: dropOffDate } },
-                            { end_time: { [Op.gt]: dropOffDate } },
-                          ],
-                        },
-                        {
-                          car_id: {
-                            [Op.notIn]: carStatusNotAvailableToOrderIds,
-                          },
-                        },
-                        {
-                          drop_off_place: createOrderDto.pick_up_place,
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
+          include: [
+            {
+              model: CarType,
+              where: orderCar.car_type_id
+                ? {
+                    id: orderCar.car_type_id,
+                  }
+                : {},
             },
-          },
-          {
-            model: CarImages,
-            where: {},
-            order: [['order', 'ASC']],
-          },
-        ],
-        lock: true,
-      });
-      return carCanOrdered;
-      return null;
+            {
+              model: CarSteering,
+              where: orderCar.car_steering_id
+                ? {
+                    id: orderCar.car_steering_id,
+                  }
+                : {},
+            },
+            {
+              model: CarPrice,
+              where: orderCar.current_price
+                ? {
+                    price_rent_per_day: {
+                      [Op.lte]: orderCar.current_price,
+                    },
+                  }
+                : {},
+              order: [['createdAt', 'DESC']],
+            },
+            {
+              model: CarStatus,
+              where: {
+                [Op.or]: [
+                  {
+                    [Op.and]: [
+                      { status: 'AVAILABLE' },
+                      createOrderDto.pick_up_date
+                        ? {
+                            [Op.and]: [
+                              {
+                                start_time: {
+                                  [Op.lte]: createOrderDto.pick_up_date,
+                                },
+                              },
+                              { start_time: { [Op.lt]: currentDate } },
+                            ],
+                          }
+                        : {},
+                      createOrderDto.drop_off_date
+                        ? {
+                            [Op.or]: [
+                              { end_time: null },
+                              {
+                                end_time: {
+                                  [Op.lt]: createOrderDto.drop_off_date,
+                                },
+                              },
+                            ],
+                          }
+                        : {},
+                      {
+                        car_id: { [Op.notIn]: carsRentedIds },
+                      },
+                      {
+                        [Op.or]: [
+                          {
+                            [Op.and]: [
+                              { pick_up_place: null },
+                              {
+                                car_id: {
+                                  [Op.notIn]: carIdsWasRentedBeforeSomeHow,
+                                },
+                              },
+                            ],
+                          },
+                          {
+                            pick_up_place: createOrderDto.pick_up_place,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    [Op.or]: [
+                      {
+                        [Op.and]: [
+                          {
+                            status: {
+                              [Op.in]: [
+                                'PENDING',
+                                'HIRING',
+                                'NOT_RETURNED',
+                                'FIXING',
+                              ],
+                            },
+                          },
+                          {
+                            [Op.and]: [
+                              {
+                                start_time: { [Op.gte]: currentDate },
+                                end_time: { [Op.gte]: currentDate },
+                              },
+                              {
+                                start_time: { [Op.lt]: pickUpDate },
+                              },
+                              { end_time: { [Op.lt]: pickUpDate } },
+                              { start_time: { [Op.lt]: dropOffDate } },
+                              { end_time: { [Op.lt]: dropOffDate } },
+                            ],
+                          },
+                          {
+                            car_id: {
+                              [Op.notIn]: carStatusNotAvailableToOrderIds,
+                            },
+                          },
+                          {
+                            drop_off_place: createOrderDto.pick_up_place,
+                          },
+                        ],
+                      },
+                      {
+                        [Op.and]: [
+                          {
+                            status: {
+                              [Op.in]: [
+                                'PENDING',
+                                'HIRING',
+                                'NOT_RETURNED',
+                                'FIXING',
+                              ],
+                            },
+                          },
+                          {
+                            [Op.and]: [
+                              {
+                                start_time: { [Op.gte]: currentDate },
+                                end_time: { [Op.gte]: currentDate },
+                              },
+                              {
+                                start_time: { [Op.gt]: pickUpDate },
+                              },
+                              { end_time: { [Op.gt]: pickUpDate } },
+                              { start_time: { [Op.gt]: dropOffDate } },
+                              { end_time: { [Op.gt]: dropOffDate } },
+                            ],
+                          },
+                          {
+                            car_id: {
+                              [Op.notIn]: carStatusNotAvailableToOrderIds,
+                            },
+                          },
+                          {
+                            drop_off_place: createOrderDto.pick_up_place,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            {
+              model: CarImages,
+              where: {},
+              order: [['order', 'ASC']],
+            },
+          ],
+          lock: true,
+        });
+        return carCanOrdered;
+      } else {
+        const carCanOrdered = await this.carModel.findAndCountAll({
+          include: [
+            {
+              model: CarType,
+              where: orderCar.car_type_id
+                ? {
+                    id: orderCar.car_type_id,
+                  }
+                : {},
+            },
+            {
+              model: CarSteering,
+              where: orderCar.car_steering_id
+                ? {
+                    id: orderCar.car_steering_id,
+                  }
+                : {},
+            },
+            {
+              model: CarPrice,
+              where: orderCar.current_price
+                ? {
+                    price_rent_per_day: {
+                      [Op.lte]: orderCar.current_price,
+                    },
+                  }
+                : {},
+              order: [['createdAt', 'DESC']],
+            },
+            {
+              model: CarStatus,
+              where: {
+                [Op.or]: [
+                  {
+                    [Op.and]: [
+                      { status: 'AVAILABLE' },
+                      createOrderDto.pick_up_date
+                        ? {
+                            [Op.and]: [
+                              {
+                                start_time: {
+                                  [Op.lte]: createOrderDto.pick_up_date,
+                                },
+                              },
+                              { start_time: { [Op.lt]: currentDate } },
+                            ],
+                          }
+                        : {},
+                      createOrderDto.drop_off_date
+                        ? {
+                            [Op.or]: [
+                              { end_time: null },
+                              {
+                                end_time: {
+                                  [Op.lt]: createOrderDto.drop_off_date,
+                                },
+                              },
+                            ],
+                          }
+                        : {},
+                      {
+                        car_id: { [Op.notIn]: carsRentedIds },
+                      },
+                      {
+                        [Op.or]: [
+                          {
+                            [Op.and]: [
+                              { pick_up_place: null },
+                              {
+                                car_id: {
+                                  [Op.notIn]: carIdsWasRentedBeforeSomeHow,
+                                },
+                              },
+                            ],
+                          },
+                          {
+                            pick_up_place: createOrderDto.pick_up_place,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    [Op.or]: [
+                      {
+                        [Op.and]: [
+                          {
+                            status: {
+                              [Op.in]: [
+                                'PENDING',
+                                'HIRING',
+                                'NOT_RETURNED',
+                                'FIXING',
+                              ],
+                            },
+                          },
+                          {
+                            [Op.and]: [
+                              {
+                                start_time: { [Op.gte]: currentDate },
+                                end_time: { [Op.gte]: currentDate },
+                              },
+                              {
+                                start_time: { [Op.lt]: pickUpDate },
+                              },
+                              { end_time: { [Op.lt]: pickUpDate } },
+                              { start_time: { [Op.lt]: dropOffDate } },
+                              { end_time: { [Op.lt]: dropOffDate } },
+                            ],
+                          },
+                          {
+                            car_id: {
+                              [Op.notIn]: carStatusNotAvailableToOrderIds,
+                            },
+                          },
+                          {
+                            drop_off_place: createOrderDto.pick_up_place,
+                          },
+                        ],
+                      },
+                      {
+                        [Op.and]: [
+                          {
+                            status: {
+                              [Op.in]: [
+                                'PENDING',
+                                'HIRING',
+                                'NOT_RETURNED',
+                                'FIXING',
+                              ],
+                            },
+                          },
+                          {
+                            [Op.and]: [
+                              {
+                                start_time: { [Op.gte]: currentDate },
+                                end_time: { [Op.gte]: currentDate },
+                              },
+                              {
+                                start_time: { [Op.gt]: pickUpDate },
+                              },
+                              { end_time: { [Op.gt]: pickUpDate } },
+                              { start_time: { [Op.gt]: dropOffDate } },
+                              { end_time: { [Op.gt]: dropOffDate } },
+                            ],
+                          },
+                          {
+                            car_id: {
+                              [Op.notIn]: carStatusNotAvailableToOrderIds,
+                            },
+                          },
+                          {
+                            drop_off_place: createOrderDto.pick_up_place,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            {
+              model: CarImages,
+              where: {},
+              order: [['order', 'ASC']],
+            },
+          ],
+          lock: true,
+        });
+        if (carCanOrdered.rows.length > 0) {
+          return carCanOrdered.rows[0];
+        } else {
+          return null;
+        }
+      }
     } catch (ex) {
       console.log(ex);
       ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST);

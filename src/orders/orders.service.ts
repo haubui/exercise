@@ -13,6 +13,7 @@ import { CarStatus } from 'src/car_statuses/entities/car_status.model';
 import { CarStatusesService } from 'src/car_statuses/car_statuses.service';
 import { CreateCarStatusDto } from 'src/car_statuses/dto/create-car_status.dto';
 import { CitiesService } from 'src/cities/cities.service';
+import { UserPayOrderDto } from './dto/user-pay-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -95,6 +96,16 @@ export class OrdersService {
     }
   }
 
+  async findOrderByUserEmail(userEmail: string) {
+    const user = await this.usersService.findOneByEmail(userEmail);
+    try {
+      return this.orderModel.findAll({ where: { user_id: user.id } });
+    } catch (err) {
+      console.log(err);
+      ResponseUtils.throwErrorException();
+    }
+  }
+
   findOne(id: number) {
     try {
       return this.orderModel.findOne({ where: { id: id } });
@@ -104,10 +115,11 @@ export class OrdersService {
     }
   }
 
-  async update(id: number, updateOrderDto: UpdateOrderDto) {
+  async update(updateOrderDto: UserPayOrderDto) {
+    const transaction = await sequelizeGloble.transaction();
     try {
       const orderWantToUpdate = await this.orderModel.findOne({
-        where: { id: id },
+        where: { id: updateOrderDto.order_id },
       });
       if (orderWantToUpdate == null) {
         ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
@@ -116,10 +128,14 @@ export class OrdersService {
         });
       }
       const orderUpdated = plainToInstance(Order, updateOrderDto);
-      await orderWantToUpdate.update(orderUpdated);
+      orderUpdated.id = updateOrderDto.order_id;
+      await orderWantToUpdate.update(orderUpdated, { transaction });
+      // TODO UPdate car status this.carStatusesService.update();
+      transaction.commit();
       return orderUpdated;
     } catch (err) {
       console.log(err);
+      transaction.rollback();
       ResponseUtils.throwErrorException();
     }
   }

@@ -22,7 +22,7 @@ import { GuardUtils } from 'src/guards/guard.utils';
 import { Request } from 'express';
 import { UserResponseDto } from 'src/users/dto/user.response.dto';
 
-@Controller('auth/v1')
+@Controller('v1/auth')
 export class AuthController {
   constructor(
     private authService: AuthService,

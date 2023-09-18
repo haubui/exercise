@@ -7,6 +7,7 @@ import { plainToInstance } from 'class-transformer';
 import { ResponseUtils } from 'src/base/response.utils';
 import { ERROR_CODES } from 'src/base/error.code';
 import { Transaction } from 'sequelize';
+import { UserPayOrderDto } from 'src/orders/dto/user-pay-order.dto';
 
 @Injectable()
 export class CarStatusesService {
@@ -46,6 +47,30 @@ export class CarStatusesService {
       }
       const carStatusUpdated = plainToInstance(CarStatus, updateCarStatusDto);
       await carStatusToUpdate.update(carStatusUpdated);
+      return carStatusUpdated;
+    } catch (err) {
+      console.log(err);
+      ResponseUtils.throwErrorException();
+    }
+  }
+
+  async updateToPaidCarStatus(
+    updateOrderDto: UserPayOrderDto,
+    transaction: Transaction,
+  ) {
+    try {
+      const carStatusToUpdate = await this.carStatusModel.findOne({
+        where: { id: updateOrderDto.car_id },
+      });
+      if (carStatusToUpdate == null) {
+        ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+          code: ERROR_CODES.NOT_FOUND.error_code,
+          message: ERROR_CODES.NOT_FOUND.message,
+        });
+      }
+      const carStatusUpdated = plainToInstance(CarStatus, updateOrderDto);
+      await carStatusToUpdate.update(carStatusUpdated);
+      await carStatusToUpdate.update({ status: 'HIRING' }, { transaction });
       return carStatusUpdated;
     } catch (err) {
       console.log(err);

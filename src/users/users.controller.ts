@@ -18,7 +18,7 @@ import { Role, Roles } from 'src/guards/role.decorator';
 import { UpdateOptions } from 'sequelize';
 import { UpdateUserDto } from './dto/udate.user.dto';
 
-@Controller('users/v1')
+@Controller('v1/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

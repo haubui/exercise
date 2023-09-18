@@ -12,7 +12,7 @@ import { RecentCarsService } from './recent_cars.service';
 import { CreateRecentCarDto } from './dto/create-recent_car.dto';
 import { UpdateRecentCarDto } from './dto/update-recent_car.dto';
 
-@Controller('recent-cars')
+@Controller('v1/recent-cars')
 export class RecentCarsController {
   constructor(private readonly recentCarsService: RecentCarsService) {}
 

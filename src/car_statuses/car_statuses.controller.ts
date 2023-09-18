@@ -11,7 +11,7 @@ import { CarStatusesService } from './car_statuses.service';
 import { CreateCarStatusDto } from './dto/create-car_status.dto';
 import { UpdateCarStatusDto } from './dto/update-car_status.dto';
 
-@Controller('car-statuses')
+@Controller('v1/car-statuses')
 export class CarStatusesController {
   constructor(private readonly carStatusesService: CarStatusesService) {}
 

@@ -12,7 +12,7 @@ import { CreateOrderStatusDto } from './dto/create-order_status.dto';
 import { UpdateOrderStatusDto } from './dto/update-order_status.dto';
 import { Roles, Role } from 'src/guards/role.decorator';
 
-@Controller('order-status')
+@Controller('v1/order-status')
 export class OrderStatusController {
   constructor(private readonly orderStatusService: OrderStatusService) {}
 

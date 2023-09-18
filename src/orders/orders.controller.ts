@@ -14,7 +14,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { Role, Roles } from 'src/guards/role.decorator';
 import { UserPayOrderDto } from './dto/user-pay-order.dto';
 
-@Controller('orders')
+@Controller('v1/orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
@@ -31,7 +31,7 @@ export class OrdersController {
   @Post('userPaidAnOrder')
   @Roles(Role.Admin)
   userPaidAnOrder(@Body() userPayOrderDto: UserPayOrderDto) {
-    return this.ordersService.update(userPayOrderDto);
+    return this.ordersService.paidAnOrder(userPayOrderDto);
   }
 
   @Post('cancelOrder')

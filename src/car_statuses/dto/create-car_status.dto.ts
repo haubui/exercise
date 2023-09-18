@@ -5,6 +5,9 @@ export class CreateCarStatusDto {
   @Type(() => Number)
   @IsInt()
   car_id: number;
+  @Type(() => Number)
+  @IsInt()
+  order_id: number;
   @IsString()
   @IsNotEmpty()
   status: string;

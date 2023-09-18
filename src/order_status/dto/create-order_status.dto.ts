@@ -1,1 +1,7 @@
-export class CreateOrderStatusDto {}
+import { IsNotEmpty, IsString } from 'class-validator';
+
+export class CreateOrderStatusDto {
+  @IsString()
+  @IsNotEmpty()
+  status: string;
+}

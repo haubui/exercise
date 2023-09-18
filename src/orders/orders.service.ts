@@ -27,6 +27,7 @@ export class OrdersService {
   ) {}
   async create(createOrderDto: CreateOrderDto, optimize = false) {
     const transaction = await sequelizeGloble.transaction();
+    console.log(`createOrderDto =====  ${createOrderDto}`);
     try {
       const userOrdered = await this.usersService.findOneById(
         createOrderDto.user_id.toString(),
@@ -66,10 +67,11 @@ export class OrdersService {
         });
       }
       const orderNew = plainToInstance(Order, createOrderDto);
-      await orderNew.save({ transaction });
+      const orderSaved = await orderNew.save({ transaction });
       const carStatusDto = new CreateCarStatusDto();
       carStatusDto.status = 'PENDING';
       carStatusDto.car_id = carCanOrder.id;
+      carStatusDto.order_id = orderSaved.id;
       carStatusDto.start_time = createOrderDto.pick_up_date;
       carStatusDto.end_time = createOrderDto.drop_off_date;
       carStatusDto.pick_up_place = createOrderDto.pick_up_place;
@@ -133,6 +135,40 @@ export class OrdersService {
       // TODO UPdate car status this.carStatusesService.update();
       transaction.commit();
       return orderUpdated;
+    } catch (err) {
+      console.log(err);
+      transaction.rollback();
+      ResponseUtils.throwErrorException();
+    }
+  }
+
+  async paidAnOrder(updateOrderDto: UserPayOrderDto) {
+    const transaction = await sequelizeGloble.transaction();
+    try {
+      const orderWantToUpdate = await this.orderModel.findOne({
+        where: { id: updateOrderDto.order_id },
+      });
+      if (orderWantToUpdate == null) {
+        ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+          code: ERROR_CODES.NOT_FOUND.error_code,
+          message: ERROR_CODES.NOT_FOUND.message,
+        });
+      }
+      await orderWantToUpdate.update(
+        {
+          order_status_id: 2,
+          payment_method_id: updateOrderDto.payment_method_id,
+          car_id: updateOrderDto.car_id,
+          user_id: updateOrderDto.user_id,
+        },
+        { where: { id: updateOrderDto.order_id }, transaction },
+      );
+      await this.carStatusesService.updateToPaidCarStatus(
+        updateOrderDto,
+        transaction,
+      );
+      transaction.commit();
+      return orderWantToUpdate;
     } catch (err) {
       console.log(err);
       transaction.rollback();

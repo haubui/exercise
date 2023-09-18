@@ -12,7 +12,7 @@ import { CreatePaymentMethodDto } from './dto/create-payment_method.dto';
 import { UpdatePaymentMethodDto } from './dto/update-payment_method.dto';
 import { Role, Roles } from 'src/guards/role.decorator';
 
-@Controller('payment-method')
+@Controller('v1/payment-method')
 export class PaymentMethodController {
   constructor(private readonly paymentMethodService: PaymentMethodService) {}
 

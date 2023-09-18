@@ -25,7 +25,7 @@ import { CarDetailDto } from './dto/detail-car-queries.dto';
 import { MulterFile } from 'multer';
 import { CarsFileInterceptor } from './cars.intercepters';
 
-@Controller('cars')
+@Controller('v1/cars')
 export class CarsController {
   constructor(private readonly carsService: CarsService) {}
 

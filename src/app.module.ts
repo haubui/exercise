@@ -10,28 +10,31 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import * as Joi from 'joi';
 import { defaultTypeOrmOptions } from './database/typeorm.config';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { jwtModuleOptions } from './config/jwtconfig';
-import { AppIntercepter } from './base/app.intercepter';
-import { CarRentalValidationPine } from './validate/validation.pine';
-import { AuthGuard } from './guards/auth.guard';
-import { RolesGuard } from './guards/role.guard';
+import { AuthModule } from './api/auth/auth.module';
+import { UsersModule } from './api/users/users.module';
+import { jwtModuleOptions } from './shared/config/jwtconfig';
+import { AppIntercepter } from './shared/base/app.intercepter';
+import { AuthGuard } from './shared/guards/auth.guard';
+import { RolesGuard } from './shared/guards/role.guard';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TasksModule } from './background/bacground.tasks.module';
-import { CACHE_TIME_TO_LIVE, MAX_CACHE_ITEMS } from './constants/constants';
-import { CacheService } from './cache/cache.service';
-import { QueueModule } from './queue/queue.module';
-import { CarsModule } from './cars/cars.module';
-import { OrdersModule } from './orders/orders.module';
-import { ReviewsModule } from './reviews/reviews.module';
-import { RecentCarsModule } from './recent_cars/recent_cars.module';
-import { PaymentMethodModule } from './payment_method/payment_method.module';
-import { OrderStatusModule } from './order_status/order_status.module';
-import { CarStatusesModule } from './car_statuses/car_statuses.module';
-import { CarPricesModule } from './car_prices/car_prices.module';
-import { CitiesModule } from './cities/cities.module';
+import { TasksModule } from './shared/background/bacground.tasks.module';
+import { QueueModule } from './shared/queue/queue.module';
+import { ReviewsModule } from './api/reviews/reviews.module';
+import { OrderStatusModule } from './api/order_status/order_status.module';
+import { CarPricesModule } from './api/car_prices/car_prices.module';
+import { CarStatusesModule } from './api/car_statuses/car_statuses.module';
+import { CarsModule } from './api/cars/cars.module';
+import { CitiesModule } from './api/cities/cities.module';
+import { OrdersModule } from './api/orders/orders.module';
+import { PaymentMethodModule } from './api/payment_method/payment_method.module';
+import { RecentCarsModule } from './api/recent_cars/recent_cars.module';
+import { CacheService } from './shared/cache/cache.service';
+import {
+  CACHE_TIME_TO_LIVE,
+  MAX_CACHE_ITEMS,
+} from './shared/constants/constants';
+import { CarRentalValidationPine } from './shared/validate/validation.pine';
 const logger = new Logger('SystemLog');
 
 @Module({

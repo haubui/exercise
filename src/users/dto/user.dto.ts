@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsMobilePhone,
   IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
@@ -34,7 +35,7 @@ export class UserDto {
 
   @IsString()
   @IsOptional()
-  @IsPhoneNumber()
+  @IsMobilePhone('vi-VN')
   phone: string | null;
 
   @IsString()

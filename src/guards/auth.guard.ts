@@ -13,6 +13,7 @@ import { Reflector } from '@nestjs/core';
 import { TokenPayload } from 'src/auth/token.payload';
 import { CacheService } from 'src/cache/cache.service';
 import { AuthService } from 'src/auth/auth.service';
+import { ERROR_CODES } from 'src/base/error.code';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -53,7 +54,13 @@ async function validateRequest(
   const token = GuardUtils.extractTokenFromRequest(request);
   if (!token) {
     ResponseUtils.throwErrorException(HttpStatus.UNAUTHORIZED, {
-      message: UnauthorizedException.name,
+      message: ERROR_CODES.UNAUTHORIZED.message,
+      errors: [
+        {
+          code: ERROR_CODES.UNAUTHORIZED.error_code,
+          message: ERROR_CODES.UNAUTHORIZED.message,
+        },
+      ],
     });
   }
   try {
@@ -70,7 +77,13 @@ async function validateRequest(
       );
       if (!didUserLogoutThisToken) {
         ResponseUtils.throwErrorException(HttpStatus.UNAUTHORIZED, {
-          message: UnauthorizedException.name,
+          message: ERROR_CODES.UNAUTHORIZED.message,
+          errors: [
+            {
+              code: ERROR_CODES.UNAUTHORIZED.error_code,
+              message: ERROR_CODES.UNAUTHORIZED.message,
+            },
+          ],
         });
         return false;
       }
@@ -85,7 +98,13 @@ async function validateRequest(
   } catch (error) {
     console.log(' error t ', error);
     ResponseUtils.throwErrorException(HttpStatus.UNAUTHORIZED, {
-      message: UnauthorizedException.name,
+      message: ERROR_CODES.UNAUTHORIZED.message,
+      errors: [
+        {
+          code: ERROR_CODES.UNAUTHORIZED.error_code,
+          message: ERROR_CODES.UNAUTHORIZED.message,
+        },
+      ],
     });
     return false;
   }

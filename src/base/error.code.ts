@@ -1,42 +1,42 @@
 export const ERROR_CODES = {
   GENERRAL: {
-    error_code: 500001,
+    error_code: 'GEN-0500',
     title: 'Error',
     message: 'The Internal Server error occurred, please try again later!',
   },
-  INVALID_PARAMS: {
-    error_code: 500002,
-    title: 'Error',
-    message: 'Invalid params',
-  },
   NOT_FOUND: {
-    error_code: 404001,
+    error_code: 'GEN-1404',
     title: 'Error',
     message: 'Not found',
   },
   USER_NOT_FOUND: {
-    error_code: 404002,
+    error_code: 'GEN-2404',
     title: 'Error',
     message: 'User is not found',
   },
   CAR_NOT_FOUND: {
-    error_code: 404004,
+    error_code: 'GEN-4404',
     title: 'Error',
     message: 'Car is not found',
   },
   CAR_NOT_AVAILABLE: {
-    error_code: 404005,
+    error_code: 'GEN-5404',
     title: 'Error',
     message: 'Car is not available',
   },
   ACTION_FORBIDEN: {
-    error_code: 403000,
+    error_code: 'GEN-0403',
     title: 'Error',
     message: 'Action not allowed',
   },
   BAD_REQUEST: {
-    error_code: 400000,
+    error_code: 'GEN-0400',
     title: 'Error',
-    message: 'Rating must be between 1 and 5',
+    message: 'Parameter is not valid',
+  },
+  UNAUTHORIZED: {
+    error_code: 'GEN-0401',
+    title: 'Unauthorized',
+    message: 'Your session has expired, please try again!',
   },
 };

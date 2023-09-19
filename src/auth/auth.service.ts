@@ -25,7 +25,7 @@ export class AuthService {
     const user = await this.usersService.findOneByEmail(email);
     if (!user) {
       throw ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
-        code: HttpStatus.NOT_FOUND,
+        code: `${HttpStatus.NOT_FOUND}`,
         message: 'User email or pass not correct!',
       });
     }
@@ -35,7 +35,7 @@ export class AuthService {
     console.log(isMatch);
     if (!isMatch && email == user.email) {
       throw ResponseUtils.throwErrorException(HttpStatus.UNAUTHORIZED, {
-        code: HttpStatus.UNAUTHORIZED,
+        code: `${HttpStatus.UNAUTHORIZED}`,
         message: 'User email or pass not correct!',
       });
     }

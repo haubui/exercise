@@ -38,7 +38,7 @@ export class ResponseUtils {
     title?: string,
   ): Error {
     return {
-      code: options?.code ?? errorCode ?? ERROR_CODES.GENERRAL.error_code,
+      code: options?.code ?? `${errorCode}` ?? ERROR_CODES.GENERRAL.error_code,
       title: options?.title ?? title ?? ERROR_CODES.GENERRAL.title,
       message: options?.message ?? ERROR_CODES.GENERRAL.message,
       errors: options?.errors ?? null,

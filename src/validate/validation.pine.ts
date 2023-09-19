@@ -23,13 +23,13 @@ export class CarRentalValidationPine implements PipeTransform<any> {
     if (validationErrors.length > 0) {
       const errors: Array<DetailError> = validationErrors.map((error) =>
         ResponseUtils.generateDetailError({
-          code: HttpStatus.BAD_REQUEST,
+          code: `GEN-0${HttpStatus.BAD_REQUEST}`,
           field: error.property,
           message: Object.values(error.constraints).join(', '),
         }),
       );
       ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, {
-        code: HttpStatus.BAD_REQUEST,
+        code: `${HttpStatus.BAD_REQUEST}`,
         errors: errors,
         message: errors.length > 0 ? errors[0].message : '',
       });

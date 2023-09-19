@@ -17,6 +17,7 @@ import { Public } from 'src/guards/public.decorator';
 import { Role, Roles } from 'src/guards/role.decorator';
 import { UpdateOptions } from 'sequelize';
 import { UpdateUserDto } from './dto/udate.user.dto';
+import { ResponseUtils } from 'src/base/response.utils';
 
 @Controller('v1/users')
 export class UsersController {
@@ -44,11 +45,16 @@ export class UsersController {
   @Post('profile')
   @Roles(Role.User)
   async getAUser(@Req() request: any): Promise<UserResponseDto> {
-    console.log('profile', request);
-    const user = await this.usersService.findOneById(
-      request.user.user_id.toString(),
-    );
-    return user.toUserResponseDto();
+    try {
+      console.log('profile', request);
+      const user = await this.usersService.findOneById(
+        request.user.user_id.toString(),
+      );
+      return user.toUserResponseDto();
+    } catch (e) {
+      console.log(e);
+      ResponseUtils.throwErrorException();
+    }
   }
 
   @Patch('me/update')

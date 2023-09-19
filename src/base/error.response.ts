@@ -1,20 +1,20 @@
 export interface ErrorResponse {
   success?: boolean;
-  status_code: number;
+  status_code: string;
   timestamp: string;
   path: string;
   error: any;
 }
 
 export interface Error {
-  code?: number;
+  code?: string;
   title?: string;
   message?: string;
   errors?: Array<DetailError> | null;
 }
 
 export interface DetailError {
-  code?: number;
+  code?: string;
   field?: string;
   message?: string;
 }

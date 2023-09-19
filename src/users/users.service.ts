@@ -73,6 +73,12 @@ export class UsersService {
       if (error.original.code === 'ER_DUP_ENTRY') {
         throw ResponseUtils.throwErrorException(HttpStatus.CONFLICT, {
           message: 'User email or phone already in used',
+          errors: [
+            {
+              code: 'REG-0409',
+              message: 'User email or phone already in used',
+            },
+          ],
         });
       }
       throw ResponseUtils.throwErrorException(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -18,6 +18,7 @@ import { Role, Roles } from 'src/shared/guards/role.decorator';
 import { UpdateOptions } from 'sequelize';
 import { UpdateUserDto } from './dto/udate.user.dto';
 import { ResponseUtils } from 'src/shared/base/response.utils';
+import { ERROR_CODES } from 'src/shared/base/error.code';
 
 @Controller('v1/users')
 export class UsersController {
@@ -63,22 +64,33 @@ export class UsersController {
     @Req() request: any,
     @Body() body: UpdateUserDto,
   ): Promise<UserResponseDto> {
-    const user = await this.usersService.findOneById(request.user.user_id);
-    await user.update(
-      {
-        phone: body.phone,
-        address: body.address,
-        work_title: body.work_title,
-        town_city: body.town_city,
-        country: body.country,
-        avatar_url: body.address,
-        user_name: body.user_name,
-      },
-      { where: { id: request.user.user_id } } as UpdateOptions,
-    );
-    const userReturn = await this.usersService.findOneById(
-      request.user.user_id,
-    );
-    return userReturn.toUserResponseDto();
+    try {
+      const user = await this.usersService.findOneById(request.user.user_id);
+      if (!user) {
+        ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+          code: ERROR_CODES.USER_NOT_FOUND.error_code,
+          message: ERROR_CODES.USER_NOT_FOUND.message,
+        });
+      }
+      await user.update(
+        {
+          phone: body.phone,
+          address: body.address,
+          work_title: body.work_title,
+          town_city: body.town_city,
+          country: body.country,
+          avatar_url: body.address,
+          user_name: body.user_name,
+        },
+        { where: { id: request.user.user_id } } as UpdateOptions,
+      );
+      const userReturn = await this.usersService.findOneById(
+        request.user.user_id,
+      );
+      return userReturn.toUserResponseDto();
+    } catch (e) {
+      console.log(e);
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, e);
+    }
   }
 }

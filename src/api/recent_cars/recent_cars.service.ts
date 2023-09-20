@@ -50,7 +50,7 @@ export class RecentCarsService {
       }
     } catch (e) {
       console.log(e);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, e);
     }
   }
 
@@ -89,7 +89,7 @@ export class RecentCarsService {
       }
     } catch (e) {
       console.log(e);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, e);
     }
   }
 
@@ -117,7 +117,7 @@ export class RecentCarsService {
       }
     } catch (e) {
       console.log(e);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, e);
     }
   }
 
@@ -137,7 +137,7 @@ export class RecentCarsService {
       return recentCar;
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -164,7 +164,7 @@ export class RecentCarsService {
       });
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 }

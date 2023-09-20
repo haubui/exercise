@@ -85,7 +85,7 @@ export class OrdersService {
       transaction.rollback();
       if (err.response.code === ERROR_CODES.CAR_NOT_AVAILABLE.error_code) {
         ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, err);
-      } else ResponseUtils.throwErrorException();
+      } else ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -94,7 +94,7 @@ export class OrdersService {
       return this.orderModel.findAll();
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -104,7 +104,7 @@ export class OrdersService {
       return this.orderModel.findAll({ where: { user_id: user.id } });
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -113,7 +113,7 @@ export class OrdersService {
       return this.orderModel.findOne({ where: { id: id } });
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -138,7 +138,7 @@ export class OrdersService {
     } catch (err) {
       console.log(err);
       transaction.rollback();
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -172,7 +172,7 @@ export class OrdersService {
     } catch (err) {
       console.log(err);
       transaction.rollback();
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -193,7 +193,7 @@ export class OrdersService {
       await transaction.commit();
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 }

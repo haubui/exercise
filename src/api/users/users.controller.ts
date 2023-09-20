@@ -53,7 +53,7 @@ export class UsersController {
       return user.toUserResponseDto();
     } catch (e) {
       console.log(e);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, e);
     }
   }
 

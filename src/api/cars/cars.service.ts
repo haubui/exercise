@@ -43,7 +43,7 @@ export class CarsService {
       });
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -72,7 +72,7 @@ export class CarsService {
       return recommendationCars;
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -141,7 +141,7 @@ export class CarsService {
       return aCarFullInfo;
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -162,7 +162,7 @@ export class CarsService {
       return aCarFullInfo;
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -193,7 +193,7 @@ export class CarsService {
       return aCarFullInfo;
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -213,7 +213,7 @@ export class CarsService {
       return carUpdated;
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -256,7 +256,7 @@ export class CarsService {
     } catch (error) {
       // Rollback the transaction in case of any error
       await transaction.rollback();
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, error);
     }
   }
 
@@ -268,7 +268,7 @@ export class CarsService {
       return plainToInstance(CarResponseDto, carDto);
     } catch (ex) {
       console.log(ex);
-      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST);
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, ex);
     }
   }
 
@@ -413,6 +413,7 @@ export class CarsService {
         pickUpDate.getTime() < currentDate.getTime()
       ) {
         ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, {
+          code: ERROR_CODES.BAD_REQUEST.error_code,
           message: 'Invalid pick up date',
         });
       }
@@ -571,7 +572,7 @@ export class CarsService {
       );
     } catch (ex) {
       console.log(ex);
-      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST);
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, ex);
     }
   }
   async findAllAvailableCarForOrder(

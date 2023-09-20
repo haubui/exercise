@@ -82,7 +82,10 @@ export class UsersService {
           ],
         });
       }
-      throw ResponseUtils.throwErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+      throw ResponseUtils.throwErrorException(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        error,
+      );
     }
   }
 }

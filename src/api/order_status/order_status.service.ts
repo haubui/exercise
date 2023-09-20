@@ -26,7 +26,7 @@ export class OrderStatusService {
       return this.orderStatusModel.findAll();
     } catch (error) {
       console.log(error);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, error);
     }
   }
 
@@ -35,7 +35,7 @@ export class OrderStatusService {
       return this.orderStatusModel.findAll({ where: { id: id } });
     } catch (error) {
       console.log(error);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, error);
     }
   }
 
@@ -55,7 +55,7 @@ export class OrderStatusService {
       return orderStatus;
     } catch (error) {
       console.log(error);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, error);
     }
   }
 
@@ -83,7 +83,7 @@ export class OrderStatusService {
     } catch (error) {
       transaction.rollback();
       console.log(error);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, error);
     }
   }
 }

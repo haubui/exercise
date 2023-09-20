@@ -50,7 +50,7 @@ export class PaymentMethodService {
       return paymentMethod;
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -78,7 +78,7 @@ export class PaymentMethodService {
     } catch (error) {
       console.log(error);
       transaction.rollback();
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, error);
     }
   }
 }

@@ -65,7 +65,7 @@ export class ReviewsService {
       }
     } catch (e) {
       console.log(e);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, e);
     }
   }
 
@@ -75,7 +75,7 @@ export class ReviewsService {
         where: { id: car_id },
       });
     } catch (ex) {
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, ex);
     }
   }
 
@@ -86,7 +86,7 @@ export class ReviewsService {
       });
     } catch (ex) {
       console.log(ex);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, ex);
     }
   }
 
@@ -106,7 +106,7 @@ export class ReviewsService {
       return review;
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -159,7 +159,7 @@ export class ReviewsService {
     } catch (err) {
       console.log(err);
       transaction.rollback();
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 }

@@ -20,7 +20,7 @@ export class CarPricesService {
       return carPrice;
     } catch (error) {
       console.log(error);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, error);
     }
   }
 
@@ -48,7 +48,7 @@ export class CarPricesService {
       return carPriceUpdated;
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 

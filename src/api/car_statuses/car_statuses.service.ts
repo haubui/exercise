@@ -22,7 +22,7 @@ export class CarStatusesService {
       return carStatus;
     } catch (error) {
       console.log(error);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.ACCEPTED, error);
     }
   }
 
@@ -50,7 +50,7 @@ export class CarStatusesService {
       return carStatusUpdated;
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -74,7 +74,7 @@ export class CarStatusesService {
       return carStatusUpdated;
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 
@@ -96,7 +96,7 @@ export class CarStatusesService {
       });
     } catch (err) {
       console.log(err);
-      ResponseUtils.throwErrorException();
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, err);
     }
   }
 }

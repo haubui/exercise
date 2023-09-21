@@ -24,16 +24,21 @@ import { ERROR_CODES } from 'src/shared/base/error.code';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get(':id')
-  async getUser(@Param('id') param): Promise<UserResponseDto> {
-    return (await this.usersService.findOneById(param)).toUserResponseDto();
+  @Get('profile/:user_id')
+  async getUser(@Param('user_id') user_id): Promise<UserResponseDto> {
+    return (await this.usersService.findOneById(user_id)).toUserResponseDto();
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   @Roles(Role.Admin)
   async removeUser(@Param('id') userId): Promise<void> {
-    return this.usersService.remove(userId);
+    try {
+      return this.usersService.remove(userId);
+    } catch (error) {
+      console.log(error);
+      ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, error);
+    }
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -43,11 +48,10 @@ export class UsersController {
     return this.usersService.registerUser(userDto);
   }
 
-  @Post('profile')
+  @Get('profile')
   @Roles(Role.User)
   async getAUser(@Req() request: any): Promise<UserResponseDto> {
     try {
-      console.log('profile', request);
       const user = await this.usersService.findOneById(
         request.user.user_id.toString(),
       );

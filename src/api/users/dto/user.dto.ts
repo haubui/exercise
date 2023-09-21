@@ -3,7 +3,6 @@ import {
   IsMobilePhone,
   IsNotEmpty,
   IsOptional,
-  IsPhoneNumber,
   IsString,
   ValidateIf,
 } from 'class-validator';

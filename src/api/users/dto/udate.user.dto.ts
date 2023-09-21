@@ -1,7 +1,7 @@
 import {
+  IsMobilePhone,
   IsNotEmpty,
   IsOptional,
-  IsPhoneNumber,
   IsString,
   ValidateIf,
 } from 'class-validator';
@@ -29,7 +29,7 @@ export class UpdateUserDto {
 
   @IsString()
   @IsOptional()
-  @IsPhoneNumber()
+  @IsMobilePhone('vi-VN')
   phone: string | null;
 
   @IsString()

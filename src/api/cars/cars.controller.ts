@@ -24,6 +24,7 @@ import { Public } from 'src/shared/guards/public.decorator';
 import { CarDetailDto } from './dto/detail-car-queries.dto';
 import { MulterFile } from 'multer';
 import { CarsFileInterceptor } from './cars.intercepters';
+import { Car } from './entities/car.model';
 
 @Controller('v1/cars')
 export class CarsController {
@@ -32,7 +33,7 @@ export class CarsController {
   @HttpCode(HttpStatus.CREATED)
   @Roles(Role.Admin)
   @Post('create')
-  async createCar(@Body() createCarDto: CreateCarDto): Promise<CarResponseDto> {
+  async createCar(@Body() createCarDto: CreateCarDto): Promise<Car> {
     console.log(createCarDto);
     return this.carsService.createCar(createCarDto);
   }

@@ -31,16 +31,4 @@ export class CarResponseDto {
   carType: CarType;
   carSteering: CarSteering;
   carStatuses: CarStatus;
-
-  constructor(car: Car) {
-    this.id = car.id;
-    this.car_type_id = car.car_type_id;
-    this.car_steering_id = car.car_steering_id;
-    this.name = car.name;
-    this.car_description = car.car_description;
-    this.capability = car.capability;
-    this.gasoline = car.gasoline;
-    this.average_rate = car.average_rate;
-    this.amount_reviews = car.amount_reviews;
-  }
 }

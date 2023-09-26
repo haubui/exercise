@@ -30,11 +30,11 @@ export class UsersController {
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete(':id')
+  @Delete(':user_id')
   @Roles(Role.Admin)
-  async removeUser(@Param('id') userId): Promise<void> {
+  async removeUser(@Param('user_id') user_id): Promise<void> {
     try {
-      return this.usersService.remove(userId);
+      return this.usersService.remove(user_id);
     } catch (error) {
       console.log(error);
       ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, error);

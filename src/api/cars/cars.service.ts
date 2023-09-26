@@ -260,14 +260,21 @@ export class CarsService {
     }
   }
 
-  async createCar(userDto: CreateCarDto): Promise<CarResponseDto> {
+  async createCar(userDto: CreateCarDto): Promise<Car> {
+    const transaction = await sequelizeGloble.transaction();
     try {
       const newCar = plainToInstance(Car, userDto);
-
-      const carDto = await newCar.save();
-      return plainToInstance(CarResponseDto, carDto);
+      const carDto = await newCar.save({ transaction });
+      console.log(carDto);
+      const carStatus = new CarStatus();
+      carStatus.start_time = new Date();
+      carStatus.car_id = carDto.id;
+      carStatus.status = 'AVAILABLE';
+      carStatus.save({ transaction });
+      return carDto;
     } catch (ex) {
       console.log(ex);
+      transaction.rollback();
       ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, ex);
     }
   }

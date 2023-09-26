@@ -12,6 +12,7 @@ import {
   REGISTER_USER_QUEUE_PROCESS,
   REGISTER_USER_QUEUE_PROCESSOR,
 } from 'src/shared/constants/constants';
+import { ERROR_CODES } from 'src/shared/base/error.code';
 
 @Injectable()
 export class UsersService {
@@ -33,7 +34,10 @@ export class UsersService {
         },
       });
       if (!user) {
-        throw ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND);
+        throw ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+          code: ERROR_CODES.USER_NOT_FOUND.error_code,
+          message: ERROR_CODES.USER_NOT_FOUND.message,
+        });
       }
       return user;
     } catch (error) {
@@ -50,8 +54,35 @@ export class UsersService {
   }
 
   async remove(id: string): Promise<void> {
-    const user = await this.findOneById(id);
-    await user.destroy();
+    try {
+      const user = await this.findOneById(id);
+      if (!user) {
+        throw ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+          code: ERROR_CODES.USER_NOT_FOUND.error_code,
+          errors: [
+            {
+              code: ERROR_CODES.USER_NOT_FOUND.error_code,
+              message: ERROR_CODES.USER_NOT_FOUND.message,
+            },
+          ],
+        });
+        return;
+      }
+      await user.destroy();
+    } catch (error) {
+      if (error.response.code === ERROR_CODES.USER_NOT_FOUND.error_code) {
+        throw ResponseUtils.throwErrorException(HttpStatus.NOT_FOUND, {
+          message: ERROR_CODES.USER_NOT_FOUND.message,
+          errors: [
+            {
+              code: ERROR_CODES.USER_NOT_FOUND.error_code,
+              message: ERROR_CODES.USER_NOT_FOUND.message,
+            },
+          ],
+        });
+      } else
+        throw ResponseUtils.throwErrorException(HttpStatus.BAD_REQUEST, error);
+    }
   }
 
   async registerUser(userDto: UserDto): Promise<UserResponseDto> {
